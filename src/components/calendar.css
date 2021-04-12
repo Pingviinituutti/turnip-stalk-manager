@@ -1,0 +1,27 @@
+.react-calendar {
+  width: 100%;
+}
+
+.react-calendar .turnip-buy-day {
+  background: rgb(245, 205, 119);
+}
+
+.react-calendar .turnip-sell-day {
+  background: rgb(163, 219, 130);
+}
+
+.react-calendar .react-calendar__tile--now {
+  background: rgb(59, 154, 243);
+}
+
+.react-calendar__tile {
+  padding: 8px 2px;
+}
+.react-calendar button {
+  margin-bottom: 2px;
+  /* border-bottom: 1px solid rgb(196, 196, 196); */
+}
+
+/* .react-calendar__month-view__weekNumbers .react-calendar__tile {
+  padding: 0;
+} */
