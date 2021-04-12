@@ -8,7 +8,7 @@ import './calendar.css'
 
 import { useStores } from "../stores/index"
 import { date_to_string, ITurnip } from "../stores/TurnipPriceStore";
-import { TurnipDialog } from "./TurnipPriceModal";
+import { TurnipPriceDialog } from "./TurnipPriceDialog";
 
 export const TurnipPriceManager = observer(() => {
   const { turnipPriceStore: tps } = useStores();
@@ -47,7 +47,7 @@ export const TurnipCalendar = observer(() => {
         noonTurnip = tps.getTurnipFromDateAndTime(date_str, 'afternoon')[0]
         if (noonTurnip === undefined) noonTurnip = { day: date_str, time: 'afternoon', price: undefined }
       }
-      return <TurnipDialog
+      return <TurnipPriceDialog
         morningTurnip={morningTurnip}
         noonTurnip={noonTurnip}
         propKey={tile_uuid}

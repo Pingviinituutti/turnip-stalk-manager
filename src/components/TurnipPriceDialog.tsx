@@ -10,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { ITurnip, Time } from '../stores/TurnipPriceStore';
 import { useStores } from '../stores';
 
-export const TurnipDialog = observer((props) => {
+export const TurnipPriceDialog = observer((props) => {
   const [open, setOpen] = React.useState(false);
   const { turnipPriceStore: tps } = useStores();
   const [morningTurnip, setMorningTurnip] = React.useState(props.morningTurnip);
