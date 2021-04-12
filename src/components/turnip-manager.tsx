@@ -8,7 +8,7 @@ import './calendar.css'
 
 import { useStores } from "../stores/index"
 import { date_to_string, ITurnip } from "../stores/TurnipPriceStore";
-import { TurnipSundayDialog } from "./TurnipPriceModal";
+import { TurnipDialog } from "./TurnipPriceModal";
 
 export const TurnipPriceManager = observer(() => {
   const { turnipPriceStore: tps } = useStores();
@@ -17,8 +17,8 @@ export const TurnipPriceManager = observer(() => {
     <div>
       <h2>Turnip price catalog</h2>
       <ul>
-        {tps.turnip_prices.map((tp, i) => {
-          return <li key={i}>{tp.day}, {tp.price} B</li>;
+        {tps.turnips.map((tp, i) => {
+          return <li key={i}>{tp.day}, {tp.time}. Price: {tp.price} Bells</li>;
         })}
       </ul>
       <button onClick={() => tps.addTurnipPrice(new Date(), 'afternoon', 101)}>Add Turnip price</button>
@@ -29,44 +29,29 @@ export const TurnipPriceManager = observer(() => {
 export const TurnipCalendar = observer(() => {
   const { turnipPriceStore: tps } = useStores();
 
-  const tileColor = ({date, view}) => {
+  const tileColor = ({ date, view }) => {
     if (view === 'month') {
       if (!date.getDay()) return 'turnip-buy-day'
       return 'turnip-sell-day'
     }
   }
 
-  const RenderOtherPrices = (morning_tp: ITurnip, noon_tp: ITurnip) => {
-    return (
-      <>
-        <div className={'turnip-sell-day'}>
-          <span>M: {morning_tp ? morning_tp.price : '?'} B</span>
-        </div>
-        <div className={'turnip-sell-day'}>
-          <span>N: {noon_tp ? noon_tp.price : '?'} B</span>
-        </div>
-      </>
-    )
-  }
-  
-  const RenderSundayPrices = (tp: ITurnip, key: string) => {
-    return (
-      <TurnipSundayDialog turnip={tp} propKey={key} onValueChange={tps.updateTurnipPrice}/>
-    )
-  }
-  
-  const tileContent = ({date, view}) => {
+  const tileContent = ({ date, view }) => {
     if (view === 'month') {
       const tile_uuid = uuidv4();
-      if (!date.getDay()) {
-        let turnip: ITurnip = tps.getTurnipFromDate(date)[0]
-        if (turnip === undefined) turnip = {day: date_to_string(date), time: 'morning'}
-        return RenderSundayPrices(turnip, tile_uuid)
-      } else {
-        const morning = tps.getTurnipFromDateAndTime(date, 'morning')[0]
-        const afternoon = tps.getTurnipFromDateAndTime(date, 'afternoon')[0]
-        return RenderOtherPrices(morning, afternoon)
+      const date_str = date_to_string(date)
+      let morningTurnip: ITurnip = tps.getTurnipFromDateAndTime(date_str, 'morning')[0]
+      if (morningTurnip === undefined) morningTurnip = { day: date_str, time: 'morning', price: undefined }
+      let noonTurnip: ITurnip = undefined
+      if (date.getDay() !== 0) { // if day is not Sunday, also add a afternoon turnip
+        noonTurnip = tps.getTurnipFromDateAndTime(date_str, 'afternoon')[0]
+        if (noonTurnip === undefined) noonTurnip = { day: date_str, time: 'afternoon', price: undefined }
       }
+      return <TurnipDialog
+        morningTurnip={morningTurnip}
+        noonTurnip={noonTurnip}
+        propKey={tile_uuid}
+      />
     }
   }
 

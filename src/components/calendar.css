@@ -1,17 +1,19 @@
 .react-calendar {
   width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.react-calendar .turnip-buy-day {
+.react-calendar button.turnip-buy-day {
   background: rgb(245, 205, 119);
 }
 
-.react-calendar .turnip-sell-day {
+.react-calendar button.turnip-sell-day {
   background: rgb(163, 219, 130);
 }
 
-.react-calendar .react-calendar__tile--now {
-  background: rgb(59, 154, 243);
+.react-calendar button.react-calendar__tile--now {
+  background: rgb(101, 167, 230);
+
 }
 
 .react-calendar__tile {
@@ -19,6 +21,7 @@
 }
 .react-calendar button {
   margin-bottom: 2px;
+  padding: 0 20px;
   /* border-bottom: 1px solid rgb(196, 196, 196); */
 }
 

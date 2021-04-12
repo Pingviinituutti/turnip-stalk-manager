@@ -1,8 +1,11 @@
-import { turn } from "core-js/core/array"
-import { makeAutoObservable, autorun, runInAction, makeObservable, action, observable } from "mobx"
+import { makeAutoObservable, autorun, makeObservable, action, observable } from "mobx"
 
 export const date_to_string = (date: Date): string => {
-  return date.toDateString().split('T')[0]
+  return date.toDateString()
+}
+
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
 }
 
 export type Time = 'morning' | 'afternoon'
@@ -14,97 +17,136 @@ export interface ITurnip {
 }
 
 export class TurnipPriceStore {
-    turnip_prices: ITurnip[] = []
-    // isLoading = true
-    constructor() {
-      makeObservable(this, {
-        turnip_prices: observable,
-        addTurnipPrice: action,
-        removeTurnipPrice: action,
-        updateTurnipPrice: action,
-      })
-      this.addTurnipPrice(new Date(), 'morning', 100)
-      const storedJson = localStorage.getItem('TurnipPriceStore')
-      if (storedJson) Object.assign(this, JSON.parse(storedJson))
-      autorun(() => {
-        // console.log("Cleaning turnips local storage.")
-        // this.cleanTurnips()
-        console.log("Saving current state to local storage.")
-        localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
-      })
+  turnips: ITurnip[] = []
+  // isLoading = true
+  constructor() {
+    makeObservable(this, {
+      turnips: observable,
+      addTurnip: action,
+      addTurnipPrice: action,
+      deleteTurnipPrice: action,
+      deleteTurnipAtIndex: action,
+      updateTurnipPrice: action,
+      cleanTurnips: action,
+    })
+    // this.time_to_clean = 0
+    this.addTurnipPrice(new Date(), 'morning', 100)
+    const storedJson = localStorage.getItem('TurnipPriceStore')
+    if (storedJson) Object.assign(this, JSON.parse(storedJson))
+    this.cleanTurnips()
+    autorun(() => {
+      // if (this.time_to_clean > this.clean_interval) {
+      //   this.cleanTurnips()
+      // } else {
+      //   this.time_to_clean++
+      // }
+      console.log("Saving current state to local storage.")
+      localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
+    })
+  }
+
+  // Creates a fresh TurnipPrice on the client and the server.
+  addTurnipPrice(day: (Date | string), time: Time, price: number) {
+    const str_date = (typeof day === 'string' ? day : date_to_string(day))
+    if (str_date.includes('Sun')) {
+      if (this.getTurnipFromDate(str_date).length === 0) {
+        const turnip: ITurnip = { day: str_date, time: 'morning', price: price }
+        this.turnips.push(turnip)
+        return turnip
+      }
+    } else {
+      if (this.getTurnipFromDateAndTime(str_date, time).length === 0) {
+        const turnip = { day: str_date, time: time, price: price }
+        this.turnips.push(turnip)
+        return turnip
+      }
+
     }
 
-    // Creates a fresh TurnipPrice on the client and the server.
-    addTurnipPrice(day: (Date | string), time: Time, price: number) {
-        const str_date = (typeof day === 'string' ? day : date_to_string(day))
-        if (str_date.includes('Sun')) {
-          if (this.getTurnipFromDate(str_date).length === 0) {
-            const turnip: ITurnip = { day: str_date, time: 'morning', price: price }
-            this.turnip_prices.push(turnip)
-            return turnip
-          }
-        } else {
-          if (this.getTurnipFromDateAndTime(str_date, time).length === 0) {
-            const turnip = { day: str_date, time: time, price: price }
-            this.turnip_prices.push(turnip)
-            return turnip
-          }
+    console.log(`Turnip price already exists for date ${day}.`)
+  }
 
+  addTurnip(turnip: ITurnip) {
+    const new_turnip = turnip
+    if (typeof new_turnip.day === 'string' && isValidDate(new Date(new_turnip.day))) {
+      if (new_turnip.price !== undefined) {
+        if (turnip.day.includes('Sun') && turnip.time !== 'morning') new_turnip.time = 'morning'
+        if (new_turnip.time === 'morning' || (new_turnip.time === 'afternoon')) {
+          this.turnips.push(new_turnip)
+          console.log("Added new turnip", JSON.stringify(new_turnip))
+          return new_turnip
         }
-
-        console.log(`Turnip price already exists for date ${day}.`)
-    }
-
-    // A TurnipPrice was somehow deleted, clean it from the client memory.
-    removeTurnipPrice(turnip_price) {
-        this.turnip_prices.splice(this.turnip_prices.indexOf(turnip_price), 1)
-    }
-
-    get getSundayTurnipPrices() {
-      return this.turnip_prices.filter(tp => tp.day.includes('Sun'))
-    }
-
-    public turnipExists = (turnip: ITurnip) => {
-      if (turnip.day.includes('Sun')) {
-        return (this.getTurnipFromDate(turnip.day).length > 0)
+      } else {
+        console.log("Turnip price can't be undefined")
       }
-      return (this.getTurnipFromDateAndTime(turnip.day, turnip.time).length > 0)
+    } else {
+      console.log(`Turnip date '${turnip.day}' is invalid`)
     }
+  }
 
-    updateTurnipPrice = (turnip: ITurnip) => {
-      if (this.turnipExists(turnip)) {
-        if (turnip.day.includes('Sun')) {
-          const updatedTurnipPrices = this.turnip_prices.map( tp => {
-            if (tp.day === turnip.day && tp.time) return {...turnip}
-            return tp
-          })
-          this.turnip_prices = updatedTurnipPrices
-        } else {
-          // const day_str = (typeof day === 'string' ? day : date_to_string(day))
-          const updatedTurnipPrices = this.turnip_prices.map( tp => {
-            if (tp.day === turnip.day && tp.time === turnip.time) return {...turnip}
-            return tp
-          })
-          this.turnip_prices = updatedTurnipPrices
-        }
+  deleteTurnipPrice(day: (Date | string), time: Time) {
+    const str_date = (typeof day === 'string' ? day : date_to_string(day))
+    for (const [i, t] of this.turnips.entries()) {
+      if (t.day === str_date && t.time === time) {
+        console.log("Deleting turnip", i, JSON.stringify(t))
+        this.turnips.splice(i, 1)
+        break
       }
     }
+  }
 
-    cleanTurnips = () => {
-      this.turnip_prices = this.turnip_prices.filter(tp => tp.price)
-    }
+  get getSundayTurnipPrices() {
+    return this.turnips.filter(tp => tp.day.includes('Sun'))
+  }
 
-    public getTurnipFromDate = (day: (string | Date)) => {
-      if (typeof day === 'string') {
-        return this.turnip_prices.filter(tp => (tp.day === day))
+  public turnipExists = (turnip: ITurnip) => {
+    return this.getTurnipIndex(turnip) !== undefined
+  }
+
+  deleteTurnipAtIndex(index: number) {
+    console.log(`Deleting turnip at index ${index}: `, JSON.stringify(this.turnips[index]))
+    this.turnips.splice(index, 1)
+  }
+
+  updateTurnipPrice = (turnip: ITurnip) => {
+    const turnip_index = this.getTurnipIndex(turnip)
+    if (turnip_index !== undefined) {
+      if (turnip.price !== undefined) {
+        console.log("Updating turnip price", this.turnips[turnip_index], JSON.stringify(turnip.price))
+        this.turnips[turnip_index].price = turnip.price
+      } else {
+        console.log(`Price can't be undefined`)
+        this.deleteTurnipAtIndex(turnip_index)
       }
-      return this.turnip_prices.filter(tp => (tp.day === date_to_string(day)))
-    }
-    
-    public getTurnipFromDateAndTime = (day: string, time: Time) => {
-      if (typeof day === 'string') {
-        return this.turnip_prices.filter(tp => (tp.day === day && tp.time === time))
+    } else {
+      if (turnip.price !== undefined) {
+        this.addTurnip(turnip)
       }
-      return this.turnip_prices.filter(tp => (tp.day === date_to_string(day) && tp.time === time))
     }
+  }
+
+  cleanTurnips = () => {
+    this.turnips = this.turnips.filter(tp => tp.price)
+  }
+
+  public getTurnipIndex = (turnip: ITurnip) => {
+    for (const [i, t] of this.turnips.entries()) {
+      if (t.day === turnip.day && t.time === turnip.time) return i
+    }
+    return undefined
+  }
+
+  public getTurnipFromDate = (day: (string | Date)) => {
+    if (typeof day === 'string') {
+      return this.turnips.filter(tp => (tp.day === day))
+    }
+    return this.turnips.filter(tp => (tp.day === date_to_string(day)))
+  }
+
+  public getTurnipFromDateAndTime = (day: string, time: Time) => {
+    if (typeof day === 'string') {
+      return this.turnips.filter(tp => (tp.day === day && tp.time === time))
+    }
+    return this.turnips.filter(tp => (tp.day === date_to_string(day) && tp.time === time))
+  }
 }
