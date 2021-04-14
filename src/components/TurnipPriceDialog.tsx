@@ -19,6 +19,13 @@ export const TurnipPriceDialog = observer((props) => {
   const [noonTurnip, setNoonTurnip] = React.useState(props.noonTurnip);
   const [noonPrice, setNoonPrice] = React.useState('')
   const [originalNoonPrice, setOriginalNoonPrice] = React.useState('');
+  const [morningPriceError, setMorningPriceError] = React.useState(false)
+  const [noonPriceError, setNoonPriceError] = React.useState(false)
+
+  const resetErrors = () => {
+    setMorningPriceError(false)
+    setNoonPriceError(false)
+  }
 
   const handleClickOpen = () => {
     if (morningTurnip !== undefined && morningTurnip.price !== undefined) {
@@ -32,22 +39,23 @@ export const TurnipPriceDialog = observer((props) => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOriginalMorningPrice(morningTurnip.price)
-    if (noonTurnip !== undefined) {
-      setOriginalNoonPrice(noonTurnip.price)
-    }
-    setOpen(false);
-  };
 
   const resetTurnip = (time: Time) => {
     if (time === 'morning') {
       setMorningTurnip({ day: morningTurnip.day, time: 'morning', price: originalMorningPrice })
     } else {
-      setMorningTurnip({ day: noonTurnip.day, time: 'afternoon', price: originalNoonPrice })
+      setNoonTurnip({ day: noonTurnip.day, time: 'afternoon', price: originalNoonPrice })
     }
   }
 
+  const handleClose = () => {
+    setOriginalMorningPrice(morningTurnip.price)
+    if (noonTurnip !== undefined) {
+      setOriginalNoonPrice(noonTurnip.price)
+    }
+    setOpen(false)
+    resetErrors()
+  }
   const handleCancel = () => {
     resetTurnip('morning')
     updateTurnipPrice('morning', originalMorningPrice)
@@ -55,11 +63,18 @@ export const TurnipPriceDialog = observer((props) => {
       resetTurnip('afternoon')
       updateTurnipPrice('afternoon', originalNoonPrice)
     }
-    setOpen(false);
+    setOpen(false)
+    resetErrors()
   };
 
   const updateTurnipPrice = (time: Time, price: string) => {
     const p: number = parseInt(price) || undefined
+    if (morningTurnip.day.includes('Sun')) {
+      if (p !== undefined && (p < 90 || 110 < p)) { 
+        setMorningPriceError(true)
+        return 
+      }
+    }
     const parsed_turnip: ITurnip = {
       day: morningTurnip.day, // the day is the same for morning and noon turnip
       time: time,
@@ -103,8 +118,11 @@ export const TurnipPriceDialog = observer((props) => {
           label="Price"
           type="number"
           value={morningPrice}
-          onChange={(e) => updateTurnipPrice('morning', e.target.value)}
+          onChange={(e) => {e.preventDefault(); updateTurnipPrice('morning', e.target.value)}}
+          InputProps={{inputProps: { min: 90, max: 110}}}
           fullWidth
+          error={morningPriceError}
+          helperText={morningPriceError ? "Buy price must be between 90–100 Bells" : "Buy price 90–110 Bells"}
         />
       </DialogContent>
     )
@@ -121,16 +139,20 @@ export const TurnipPriceDialog = observer((props) => {
           type="number"
           value={morningPrice}
           onChange={(e) => updateTurnipPrice('morning', e.target.value)}
+          InputProps={{inputProps: { min: 9, max: 660}}}
+          helperText={morningPriceError ? "Sell price must be between 9–660 Bells" : "Sell price 9–660 Bells"}
           fullWidth
         />
         <TextField
-          autoFocus
+          autoFocus={morningPrice !== '' ? true : false}
           margin="dense"
           id={props.propKey}
           label="Noon price"
           type="number"
           value={noonPrice}
           onChange={(e) => updateTurnipPrice('afternoon', e.target.value)}
+          InputProps={{inputProps: { min: 9, max: 660}}}
+          helperText={morningPriceError ? "Sell price must be between 9–660 Bells" : "Sell price 9–660 Bells"}
           fullWidth
         />
       </DialogContent>

@@ -1,10 +1,14 @@
 import { makeAutoObservable, autorun, makeObservable, action, observable } from "mobx"
+import { CALENDAR_TYPES } from "react-calendar/src/shared/const";
+
+import { getWeekNumber } from 'react-calendar/src/shared/dates'
 
 export const date_to_string = (date: Date): string => {
   return date.toDateString()
 }
 
 function isValidDate(d) {
+  // @ts-ignore
   return d instanceof Date && !isNaN(d);
 }
 
@@ -30,7 +34,7 @@ export class TurnipPriceStore {
       cleanTurnips: action,
     })
     // this.time_to_clean = 0
-    this.addTurnipPrice(new Date(), 'morning', 100)
+    // this.addTurnipPrice(new Date(), 'morning', 100)
     const storedJson = localStorage.getItem('TurnipPriceStore')
     if (storedJson) Object.assign(this, JSON.parse(storedJson))
     this.cleanTurnips()
@@ -112,8 +116,15 @@ export class TurnipPriceStore {
     const turnip_index = this.getTurnipIndex(turnip)
     if (turnip_index !== undefined) {
       if (turnip.price !== undefined) {
-        console.log("Updating turnip price", this.turnips[turnip_index], JSON.stringify(turnip.price))
-        this.turnips[turnip_index].price = turnip.price
+        if (turnip.day.includes('Sun')) {
+          if (turnip.price < 90 || 110 < turnip.price) {
+            console.log("Buy price can't be less than 90 or more than 110 bells.")
+            return
+          }
+        } else {
+          console.log("Updating turnip price", this.turnips[turnip_index], JSON.stringify(turnip.price))
+          this.turnips[turnip_index].price = turnip.price
+        }
       } else {
         console.log(`Price can't be undefined`)
         this.deleteTurnipAtIndex(turnip_index)
@@ -141,6 +152,11 @@ export class TurnipPriceStore {
       return this.turnips.filter(tp => (tp.day === day))
     }
     return this.turnips.filter(tp => (tp.day === date_to_string(day)))
+  }
+
+  public getWeekTurnips = (week: number) => {
+    if (week === undefined) return []
+    return this.turnips.filter(t => getWeekNumber(new Date(t.day), CALENDAR_TYPES.US) === week)
   }
 
   public getTurnipFromDateAndTime = (day: string, time: Time) => {

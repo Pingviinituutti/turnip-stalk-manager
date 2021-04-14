@@ -19,7 +19,7 @@
     "mobx-react": "^7.1.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
-    "react-calendar": "^3.3.1",
+    "react-calendar": "https://github.com/Pingviinituutti/react-calendar#add-tilecontent-to-week-number",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
     "uuid": "^8.3.2"

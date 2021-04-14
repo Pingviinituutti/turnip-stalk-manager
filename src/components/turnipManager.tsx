@@ -3,25 +3,25 @@ import { observer } from "mobx-react"
 import Calendar from 'react-calendar'
 import { v4 as uuidv4 } from 'uuid';
 
-import 'react-calendar/dist/Calendar.css';
+// import 'react-calendar/dist/Calendar.css';
 import './calendar.css'
 
 import { useStores } from "../stores/index"
 import { date_to_string, ITurnip } from "../stores/TurnipPriceStore";
 import { TurnipPriceDialog } from "./TurnipPriceDialog";
+import { TurnipWeekPredicter } from "./turnipWeekPredicter";
 
 export const TurnipPriceManager = observer(() => {
   const { turnipPriceStore: tps } = useStores();
 
   return (
     <div>
-      <h2>Turnip price catalog</h2>
-      <ul>
-        {tps.turnips.map((tp, i) => {
-          return <li key={i}>{tp.day}, {tp.time}. Price: {tp.price} Bells</li>;
-        })}
-      </ul>
-      <button onClick={() => tps.addTurnipPrice(new Date(), 'afternoon', 101)}>Add Turnip price</button>
+      <h2>Turnip price data JSON</h2>
+      <textarea 
+        className={'turnip-json-data'}
+        value={JSON.stringify(tps.turnips)}
+        readOnly
+      />
     </div>
   )
 })
@@ -36,9 +36,9 @@ export const TurnipCalendar = observer(() => {
     }
   }
 
-  const tileContent = ({ date, view }) => {
+  const tileContent = ({ date, view, weekNumber }) => {
+    const tile_uuid = uuidv4();
     if (view === 'month') {
-      const tile_uuid = uuidv4();
       const date_str = date_to_string(date)
       let morningTurnip: ITurnip = tps.getTurnipFromDateAndTime(date_str, 'morning')[0]
       if (morningTurnip === undefined) morningTurnip = { day: date_str, time: 'morning', price: undefined }
@@ -52,6 +52,14 @@ export const TurnipCalendar = observer(() => {
         noonTurnip={noonTurnip}
         propKey={tile_uuid}
       />
+    } else if (view === 'week-number') {
+      // const date_str = date_to_string(date)
+      return (
+        <TurnipWeekPredicter 
+          date={date}
+          weekNumber={weekNumber}
+        />
+      )
     }
   }
 
