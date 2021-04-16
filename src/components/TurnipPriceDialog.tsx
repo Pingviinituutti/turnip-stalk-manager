@@ -5,14 +5,15 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import DialogContextText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { ITurnip, Time } from '../stores/TurnipPriceStore';
 import { useStores } from '../stores';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 export const TurnipPriceDialog = observer((props) => {
   const [open, setOpen] = React.useState(false);
-  const { turnipPriceStore: tps } = useStores();
   const [morningTurnip, setMorningTurnip] = React.useState(props.morningTurnip);
   const [morningPrice, setMorningPrice] = React.useState('')
   const [originalMorningPrice, setOriginalMorningPrice] = React.useState('');
@@ -21,6 +22,8 @@ export const TurnipPriceDialog = observer((props) => {
   const [originalNoonPrice, setOriginalNoonPrice] = React.useState('');
   const [morningPriceError, setMorningPriceError] = React.useState(false)
   const [noonPriceError, setNoonPriceError] = React.useState(false)
+  
+  const { turnipPriceStore: tps } = useStores();
 
   const resetErrors = () => {
     setMorningPriceError(false)
@@ -111,6 +114,7 @@ export const TurnipPriceDialog = observer((props) => {
   const renderSundayDialog = () => {
     return (
       <DialogContent>
+        <DialogContentText>{morningTurnip.day}</DialogContentText>
         <TextField
           autoFocus
           margin="dense"
@@ -128,9 +132,10 @@ export const TurnipPriceDialog = observer((props) => {
     )
   }
 
-  const renderOtherDialog = () => {
+  const renderSellPriceDialog = () => {
     return (
       <DialogContent>
+        <DialogContentText>{morningTurnip.day}</DialogContentText>
         <TextField
           autoFocus
           margin="dense"
@@ -163,8 +168,8 @@ export const TurnipPriceDialog = observer((props) => {
     <div key={props.tile_uuid}>
       {renderTurnipPriceContent()}
       <Dialog open={open} onClose={handleClose} aria-labelledby="turnip-price-dialog">
-        <DialogTitle id="turnip-price-dialog">Set turnip prices</DialogTitle>
-        {morningTurnip.day.includes('Sun') ? renderSundayDialog() : renderOtherDialog()}
+        <DialogTitle id="turnip-price-dialog">{morningTurnip.day.includes('Sun') ? "Set turnip buy price" : "Set turnip sell prices"}</DialogTitle>
+        {morningTurnip.day.includes('Sun') ? renderSundayDialog() : renderSellPriceDialog()}
         <DialogActions>
           <Button onClick={handleCancel} color="primary">
             Cancel
