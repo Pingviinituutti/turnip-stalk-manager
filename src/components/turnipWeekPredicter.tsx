@@ -3,7 +3,7 @@ import { observer } from "mobx-react"
 
 import { useStores } from "../stores/index"
 import { ITurnip } from "../stores/TurnipPriceStore"
-import { any } from "prop-types"
+import patterns from "./turnipWeekPatterns"
 
 type priceList = (number | '')[]
 
@@ -287,14 +287,15 @@ const recognizePattern3 = (prices: priceList) => {
 
     // decreasing phase before the peak
     for (work = 2; work < peakStart; work++) {
-      if (prices[work] === '') continue
       possibleMinValues[work] = Math.ceil(rateMaxVal * baseMinPrice)
       possibleMaxValues[work] = Math.ceil(rateMinVal * baseMaxPrice)
-
-      // Check if any of the logged prices exceeds the minimum or maximum calculated prices
-      // and return 0 if the value exceeds to indicate pattern does not match given prices. 
-      if (prices[work] > possibleMaxValues[work]) { validPeaks.push(false); continue peakLoop }
-      if (prices[work] < possibleMinValues[work]) { validPeaks.push(false); continue peakLoop }
+      
+      if (prices[work] !== '') {
+        // Check if any of the logged prices exceeds the minimum or maximum calculated prices
+        // and return 0 if the value exceeds to indicate pattern does not match given prices. 
+        if (prices[work] > possibleMaxValues[work]) { validPeaks.push(false); continue peakLoop }
+        if (prices[work] < possibleMinValues[work]) { validPeaks.push(false); continue peakLoop }
+      }
       
       rateMinVal -= .03
       rateMaxVal -= .05
@@ -377,6 +378,7 @@ export const TurnipWeekPredicter = observer((props) => {
     if (weekTurnips.length === 0) {
       return <div></div>
     }
+    console.log(patterns)
     const prices = constructWeekPrices(weekTurnips)
     const potentialPatterns = recognizePattern(prices)
     console.log(weekNumber, '\n', JSON.stringify(prices))
