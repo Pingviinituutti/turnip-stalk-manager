@@ -1,13 +1,13 @@
-type Price = (number | '')[]
+export type Price = (number | '')[]
 
 const getEmptyPriceList = () => { return Array(14).fill('') }
 
-interface IPatternMultiplier {
+export interface IPatternMultiplier {
   mins: Price[]
   maxs: Price[]
 }
 
-interface IPatternMultipliers {
+export interface IPatternMultipliers {
   pattern0?: IPatternMultiplier // PATTERN 0: high, decreasing, high, decreasing, high
   pattern1?: IPatternMultiplier // PATTERN 1: decreasing middle, high spike, random low
   pattern2?: IPatternMultiplier // PATTERN 2: consistently decreasing
