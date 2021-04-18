@@ -44,21 +44,21 @@ const nextPatternProbabilities = (pattern: number) => {
   let chance: IPattern
   if (pattern >= 4) {
     chance = { pattern2: 1 }
-  } 
+  }
   else {
     switch (pattern) {
-    case 0:
-      chance = constructPatternProbability(20, 50, 65) // 20, 30, 15, 35
-      break;
-    case 1:
-      chance = constructPatternProbability(50, 55, 75) // 50,  5, 20, 25
-      break;
-    case 3:
-      chance = constructPatternProbability(45, 70, 85) // 45, 25, 15, 15
-      break;
-    default: // pattern 2
-      chance = constructPatternProbability(25, 70, 75) // 25, 45,  5, 25
-      break;
+      case 0:
+        chance = constructPatternProbability(20, 50, 65) // 20, 30, 15, 35
+        break;
+      case 1:
+        chance = constructPatternProbability(50, 55, 75) // 50,  5, 20, 25
+        break;
+      case 3:
+        chance = constructPatternProbability(45, 70, 85) // 45, 25, 15, 15
+        break;
+      default: // pattern 2
+        chance = constructPatternProbability(25, 70, 75) // 25, 45,  5, 25
+        break;
     }
   }
   return chance
@@ -74,8 +74,8 @@ function transpose(a) {
 const filterPossible = (prices: TPrice, patterns: IPatternMultiplier) => {
   const basePrice = prices[0]
   if (basePrice !== '') {
-    let{mins, maxs} = patterns
-    const possible = { mins: [], maxs: []}
+    let { mins, maxs } = patterns
+    const possible = { mins: [], maxs: [] }
 
     for (let i = 0; i < mins.length; i++) {
       const possibilities = []
@@ -97,46 +97,29 @@ const filterPossible = (prices: TPrice, patterns: IPatternMultiplier) => {
         possible.maxs.push(maxs[i])
       }
     }
-    console.log("Found possible patterns", possible)
+    // console.log("Found possible patterns", possible)
     return possible
   }
-  // const { mins, maxs } = patterns
-  // const minsT = transpose(mins)
-  // const maxsT = transpose(maxs)
-  // console.log("Prices", prices)
-  // console.log("pu Prices", prices.map(p => p ? (p / basePrice).toFixed(2) : "" ))
-  // console.log("Mins", mins)
-  // // console.log("transposed mins", minsT)
-
-  // const possibleMins = (prices.map((p, i) => minsT.map(m => (p && 2 < i && m && m[i] > 0 ? m[i] <= p / basePrice : true))))
-  // const possibleMaxs = (prices.map((p, i) => maxsT.map(m => (p && 2 < i && m && m[i] > 0 ? basePrice * m[i] < p : true))))
-  // console.log("Possible mins", possibleMins)
-  // console.log("Possible transposed mins", transpose(possibleMins))
-  // console.log("Checked maxs", checkedMaxs)
-  // console.log("Checked transposed maxs", transpose(checkedMaxs))
-
-  // const possible: IPatternMultipliers = {}
-  // console.log("transposed maxs", maxT)
-  // const possibleMins = minsT.map((i, work) => {
-  //   console.log(work)
-  //   return work.map(m => (basePrice ? basePrice * m < prices[i] : false))
-  // })
-  // console.log("Possible mins", possibleMins)
 }
 
 const comparePricesToPatterns = (prices: TPrice) => {
-    const possiblePatterns: IPatternMultipliers = {}
+  const possiblePatterns: IPatternMultipliers = {
+    pattern0: filterPossible(prices, PATTERNS.pattern0),
+    pattern1: filterPossible(prices, PATTERNS.pattern1),
+    pattern2: filterPossible(prices, PATTERNS.pattern2),
+    pattern3: filterPossible(prices, PATTERNS.pattern3),
+  }
 
-    console.log("Pattern 0", filterPossible(prices, PATTERNS.pattern0))
-    console.log("Pattern 1", filterPossible(prices, PATTERNS.pattern1))
-    console.log("Pattern 2", filterPossible(prices, PATTERNS.pattern2))
-    console.log("Pattern 3", filterPossible(prices, PATTERNS.pattern3))
-    return possiblePatterns
+  console.log("Pattern 0", possiblePatterns.pattern0)
+  console.log("Pattern 1", possiblePatterns.pattern1)
+  console.log("Pattern 2", possiblePatterns.pattern2)
+  console.log("Pattern 3", possiblePatterns.pattern3)
+  return possiblePatterns
 }
 
 export const TurnipWeekPredicter = observer((props) => {
   const { turnipPriceStore: tps } = useStores();
-  const [ weekNumber, setWeekNumber ] = React.useState(props !== undefined ? props.weekNumber : undefined)
+  const [weekNumber, setWeekNumber] = React.useState(props !== undefined ? props.weekNumber : undefined)
   // const { week, weekNumber } = props
 
   if (weekNumber !== undefined) {
@@ -147,14 +130,29 @@ export const TurnipWeekPredicter = observer((props) => {
     // console.log(patterns)
     const prices = constructWeekPrices(weekTurnips)
     const possiblePatterns = comparePricesToPatterns(prices)
+    const numPossiblePatterns = Object.values(possiblePatterns).reduce((key, value) => + (value.mins.length > 0), 0)
+    console.log(numPossiblePatterns)
     console.log(weekNumber, '\n', JSON.stringify(prices))
     return (
       <div className={'week-prediction'}>
         <div className={"pattern-predictions-container"}>
-          <div className={"pattern-prediction"}><h5>P0</h5><span>{possiblePatterns.pattern0 ? '❓' : '❌'}</span></div>
-          <div className={"pattern-prediction"}><h5>P1</h5><span>{possiblePatterns.pattern1 ? '❓' : '❌'}</span></div>
-          <div className={"pattern-prediction"}><h5>P2</h5><span>{possiblePatterns.pattern2 ? '❓' : '❌'}</span></div>
-          <div className={"pattern-prediction"}><h5>P3</h5><span>{possiblePatterns.pattern3 ? '❓' : '❌'}</span></div>
+          {possiblePatterns.pattern0.mins.length
+            ? <div className={"pattern-prediction"}><h5>P0</h5><p>Probability: {possiblePatterns.pattern0.mins.length ? '❓' : '❌'}</p></div>
+            : null
+          }
+          {possiblePatterns.pattern1.mins.length
+            ? <div className={"pattern-prediction"}><h5>P1</h5><p>Probability: {possiblePatterns.pattern0.mins.length ? '❓' : '❌'}</p></div>
+            : null
+          }
+          {possiblePatterns.pattern2.mins.length
+            ? <div className={"pattern-prediction"}><h5>P2</h5><p>Probability: {possiblePatterns.pattern0.mins.length ? '❓' : '❌'}</p></div>
+            : null
+          }
+          {possiblePatterns.pattern3.mins.length
+            ? <div className={"pattern-prediction"}><h5>P3</h5><p>Probability: {possiblePatterns.pattern0.mins.length ? '❓' : '❌'}</p></div>
+            : null
+          }
+
         </div>
       </div>
     )

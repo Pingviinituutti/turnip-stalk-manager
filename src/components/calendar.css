@@ -53,8 +53,13 @@ textarea.turnip-json-data {
   /* flex-shrink: 0; */
   max-width: 50%;
   min-width: 50%;
+  text-align: center;
 }
 
 .pattern-prediction h5 {
+  margin-bottom: 0;
+}
+.pattern-prediction p {
+  font-size: 10px;
   margin-bottom: 0;
 }
