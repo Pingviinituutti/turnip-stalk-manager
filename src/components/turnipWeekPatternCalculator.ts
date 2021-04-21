@@ -1,18 +1,6 @@
-export type Price = (number | '')[]
+import { IPatternMultipliers } from "./TurnipTypes"
 
 const getEmptyPriceList = () => { return Array(14).fill('') }
-
-export interface IPatternMultiplier {
-  mins: Price[]
-  maxs: Price[]
-}
-
-export interface IPatternMultipliers {
-  pattern0?: IPatternMultiplier // PATTERN 0: high, decreasing, high, decreasing, high
-  pattern1?: IPatternMultiplier // PATTERN 1: decreasing middle, high spike, random low
-  pattern2?: IPatternMultiplier // PATTERN 2: consistently decreasing
-  pattern3?: IPatternMultiplier // PATTERN 3: decreasing, spike, decreasing
-}
 
 const getPattern0Multipliers = () => { 
   // PATTERN 0: high, decreasing, high, decreasing, high

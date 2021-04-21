@@ -1,6 +1,6 @@
-import { IPatternMultipliers } from "./turnipWeekPatternCalculator"
+import { IPatternContainer } from "./TurnipTypes"
 
-const PATTERNS: IPatternMultipliers = {
+const PATTERNS: IPatternContainer = {
     "pattern0": {
         "mins": [
             ["", "", 0.6, 0.5, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.6, 0.5, 0.4],

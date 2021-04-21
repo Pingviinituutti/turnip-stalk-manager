@@ -7,9 +7,10 @@ import { v4 as uuidv4 } from 'uuid';
 import './calendar.css'
 
 import { useStores } from "../stores/index"
-import { date_to_string, ITurnip } from "../stores/TurnipPriceStore";
 import { TurnipPriceDialog } from "./TurnipPriceDialog";
 import { TurnipWeekPredicter } from "./turnipWeekPredicter";
+import { date2datestr } from "./helpers";
+import { ITurnip } from "./TurnipTypes";
 
 export const TurnipPriceManager = observer(() => {
   const { turnipPriceStore: tps } = useStores();
@@ -39,7 +40,7 @@ export const TurnipCalendar = observer(() => {
   const tileContent = ({ date, view, weekNumber }) => {
     const tile_uuid = uuidv4();
     if (view === 'month') {
-      const date_str = date_to_string(date)
+      const date_str = date2datestr(date)
       let morningTurnip: ITurnip = tps.getTurnipFromDateAndTime(date_str, 'morning')[0]
       if (morningTurnip === undefined) morningTurnip = { day: date_str, time: 'morning', price: undefined }
       let noonTurnip: ITurnip = undefined
