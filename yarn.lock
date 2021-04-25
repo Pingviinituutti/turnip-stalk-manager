@@ -10628,7 +10628,7 @@ rc@^1.2.7, rc@^1.2.8:
 
 "react-calendar@https://github.com/Pingviinituutti/react-calendar#add-tilecontent-to-week-number":
   version "3.3.1"
-  resolved "https://github.com/Pingviinituutti/react-calendar#ca309f2e579433335c4c52e07b8c3fcef0587f5e"
+  resolved "https://github.com/Pingviinituutti/react-calendar#3a241e44ba349f7fa7c24649aa1c3b5a8cc2987b"
   dependencies:
     "@wojtekmaj/date-utils" "^1.0.2"
     get-user-locale "^1.2.0"

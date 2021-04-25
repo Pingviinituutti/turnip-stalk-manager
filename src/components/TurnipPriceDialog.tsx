@@ -103,7 +103,6 @@ export const TurnipPriceDialog = observer((props) => {
         setMorningTurnip(parsed_turnip)
       }
     } else {
-      console.log(price, p)
       if ((p < 9 || 660 < p)) { 
         if (time === 'morning') {
           setMorningPriceError(true)

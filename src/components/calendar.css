@@ -26,6 +26,7 @@ div.turnip-sell-day {
   height: 108px;
   border: 1px solid gray;
   margin-bottom: 2px;
+  max-width: 150px;
 }
 .react-calendar button {
   margin-bottom: 2px;
@@ -59,9 +60,10 @@ textarea.turnip-json-data {
 }
 
 .pattern-prediction img {
-  width: 50%;
   padding-left: 3px;
   padding-top: 2px;
+  width: 50%;
+  max-width: 50px;
 }
 
 .pattern-prediction h5 {

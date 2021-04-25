@@ -18,12 +18,14 @@ export class TurnipPriceStore {
       cleanTurnips: action,
       // predictWeek: computed,
     })
-    const storedJson = localStorage.getItem('TurnipPriceStore')
-    if (storedJson) Object.assign(this, JSON.parse(storedJson))
-    this.cleanTurnips()
+    if (typeof window !== 'undefined') {
+      const storedJson = localStorage.getItem('TurnipPriceStore')
+      if (storedJson) Object.assign(this, JSON.parse(storedJson))
+      this.cleanTurnips()
+    }
     autorun(() => {
       console.log("Saving current state to local storage.")
-      localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
+      if (typeof window !== 'undefined') localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
     })
   }
 
