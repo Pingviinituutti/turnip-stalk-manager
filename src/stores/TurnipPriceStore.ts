@@ -154,27 +154,52 @@ export class TurnipPriceStore {
     console.log(`Trying to predict for week number ${week}`)
     const turnips = this.getWeekTurnips(week, year)
     const prices = constructWeekPrices(turnips)
+
+    const prevTurnips = this.getWeekTurnips(week - 1, year)
+    const prevPrices = constructWeekPrices(prevTurnips)
+
     const prediction: IPredictions = {
-      pattern0: {},
-      pattern1: {},
-      pattern2: {},
-      pattern3: {},
+      pattern0: { probability: 0},
+      pattern1: { probability: 0},
+      pattern2: { probability: 0},
+      pattern3: { probability: 0},
     }
-    // If current week has no prices, try to predict what the pattern could be based on previous week prices
-    if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
-      const prevTurnips = this.getWeekTurnips(week - 1, year)
-      const prevPrices = constructWeekPrices(prevTurnips)
-      // Can't predict on empty turnips or sell prices from previous week
-      if (prevTurnips.length === 0 || prevPrices.slice(2).every(p => p === '')) {
-        // console.log(`No turnips found for previous week ${week - 1}. Can't predict :(`)
+
+    if (prevTurnips.length === 0 || prevPrices.slice(2).every(p => p === '')) {
+      // If previous week has no prices, just recognise current pattern
+      if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
+        // just give NaNs as probability if current week has no prices
         prediction.pattern0.probability = NaN
         prediction.pattern1.probability = NaN
         prediction.pattern2.probability = NaN
         prediction.pattern3.probability = NaN
-      } else {
-        const previousPattern = getPossiblePatterns(prevPrices)
-        const numPossiblePreviousPatterns = Object.values(previousPattern).reduce((acc, prev) => (acc + (+ prev.possiblePatterns?.mins.length > 0)), 0)
-        console.log("Number of possible patterns in week " + (week - 1) + ": " + numPossiblePreviousPatterns)
+      } 
+      else {
+        // Else recognise the pattern
+        const currentPattern = getPossiblePatterns(prices)
+        const numPossiblePatterns = Object.values(currentPattern)
+          .reduce((acc, curr) => (acc + (+ curr.possiblePatterns.mins.length > 0)), 0)
+        console.log("Number of possible patterns in week " + (week) + ": " + numPossiblePatterns)
+  
+        Object.keys(currentPattern).forEach((key, index) => {
+          if (currentPattern[key].possiblePatterns.mins.length > 0) {
+            currentPattern[key].probability = 1
+            prediction[key].probability = 1 / numPossiblePatterns
+          }
+        })
+        console.log("Current week probabilities: ", JSON.stringify(prediction))
+      }
+    } 
+    else {
+      // Else previous week has prices, recognise its pattern!
+      const previousPattern = getPossiblePatterns(prevPrices)
+      console.log(`Previous week (${week - 1}) possible patterns: `, previousPattern)
+      const numPossiblePreviousPatterns = Object.values(previousPattern)
+        .reduce((acc, prev) => (acc + (+ prev.possiblePatterns?.mins.length > 0)), 0)
+      console.log(`Number of possible patterns in previous week (${week - 1}): ${numPossiblePreviousPatterns}`)
+
+      if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
+        // If there are no prices for current week yet, predict according to previous weeks possible patterns
         Object.keys(previousPattern).forEach((key, index) => {
           if (previousPattern[key].possiblePatterns?.mins.length > 0) {
             previousPattern[key].probability = 1
@@ -188,40 +213,26 @@ export class TurnipPriceStore {
           }
         })
         console.log(previousPattern)
-      }
-    } else {
-      const prevTurnips = this.getWeekTurnips(week - 1, year)
-      const prevPrices = constructWeekPrices(prevTurnips)
-
-      // If previous week has no prices, just try to recognize pattern
-      if (prevTurnips.length === 0 || prevPrices.slice(2).every(p => p === '')) {
-        const currentPattern = getPossiblePatterns(prices)
-        const numPossiblePatterns = Object.values(currentPattern)
-          .reduce((acc, curr) => (acc + (+ curr.possiblePatterns.mins.length > 0)), 0)
-        console.log("Number of possible patterns in week " + (week) + ": " + numPossiblePatterns)
-
-        Object.keys(currentPattern).forEach((key, index) => {
-          if (currentPattern[key].possiblePatterns.mins.length > 0) {
-            currentPattern[key].probability = 1
-            prediction[key].probability = 1 / numPossiblePatterns
-          }
-        })
-        console.log("Current week probabilities: ", JSON.stringify(prediction))
       } else {
-        const previousPattern = getPossiblePatterns(prevPrices)
-        const numPossiblePreviousPatterns = Object.values(previousPattern)
-          .reduce((acc, prev) => (acc + (+ prev.possiblePatterns?.mins.length > 0)), 0)
-        console.log("Number of possible patterns in week " + (week - 1) + ": " + numPossiblePreviousPatterns)
-
+        // Else, recognise previous week pattern
         const currentPattern = getPossiblePatterns(prices)
         console.log(`Current week (${week}) possible patterns: `, currentPattern)
         const numPossiblePatterns = Object.values(currentPattern).reduce((acc, curr) => (acc + (+ curr.possiblePatterns.mins.length > 0)), 0)
-        console.log("Number of possible patterns in week " + (week) + ": " + numPossiblePatterns)
-        Object.keys(currentPattern).forEach((key, index) => {
-          if (currentPattern[key].possiblePatterns?.mins.length > 0) {
-            currentPattern[key].probability = 1
-            prediction[key].probability = 1
+        Object.keys(previousPattern).forEach((key, index) => {
+          if (previousPattern[key].possiblePatterns?.mins.length > 0) {
+            const patternNumber = parseInt(key.slice(-1))
+            const probabilities = nextPatternProbabilities(patternNumber)
+            Object.keys(currentPattern).forEach((key, index) => {
+              if (currentPattern[key].possiblePatterns?.mins.length > 0) {
+                prediction[key].probability += probabilities[key]
+              }
+            })
           }
+        })
+        // Normalize probabilities
+        const tot = Object.values(prediction).reduce((acc, pred) => (acc + pred.probability), 0)
+        Object.keys(prediction).forEach((key, index) => {
+          prediction[key].probability /= tot
         })
       }
     }

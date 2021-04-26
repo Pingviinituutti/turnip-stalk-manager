@@ -22,19 +22,19 @@ export const TurnipWeekPredicter = observer((props) => {
       <div className={'week-prediction'}>
         <div className={"pattern-predictions-container"}>
           {possiblePatterns.pattern0.probability
-            ? <div className={"pattern-prediction"}><h5>P0<img src={Pattern0SVG} /></h5><p>Probability: {possiblePatterns.pattern0?.probability * 100 + "%"}</p></div>
+            ? <div className={"pattern-prediction"}><h5>P0<img src={Pattern0SVG} /></h5><p>Probability: {(possiblePatterns.pattern0?.probability * 100).toFixed(2) + "%"}</p></div>
             : null
           }
           {possiblePatterns.pattern1.probability
-            ? <div className={"pattern-prediction"}><h5>P1<img src={Pattern1SVG} /></h5><p>Probability: {possiblePatterns.pattern1?.probability * 100 + "%"}</p></div>
+            ? <div className={"pattern-prediction"}><h5>P1<img src={Pattern1SVG} /></h5><p>Probability: {(possiblePatterns.pattern1?.probability * 100).toFixed(2) + "%"}</p></div>
             : null
           }
           {possiblePatterns.pattern2.probability
-            ? <div className={"pattern-prediction"}><h5>P2<img src={Pattern2SVG} /></h5><p>Probability: {possiblePatterns.pattern2?.probability * 100 + "%"}</p></div>
+            ? <div className={"pattern-prediction"}><h5>P2<img src={Pattern2SVG} /></h5><p>Probability: {(possiblePatterns.pattern2?.probability * 100).toFixed(2) + "%"}</p></div>
             : null
           }
           {possiblePatterns.pattern3.probability
-            ? <div className={"pattern-prediction"}><h5>P3<img src={Pattern3SVG} /></h5><p>Probability: {possiblePatterns.pattern3?.probability * 100 + "%"}</p></div>
+            ? <div className={"pattern-prediction"}><h5>P3<img src={Pattern3SVG} /></h5><p>Probability: {(possiblePatterns.pattern3?.probability * 100).toFixed(2) + "%"}</p></div>
             : null
           }
 
