@@ -1,4 +1,5 @@
 import { autorun, makeObservable, action, observable } from "mobx"
+import { decompressFromEncodedURIComponent as decompress } from 'lz-string'
 // @ts-ignore
 import { getWeekNumber } from 'react-calendar/src/shared/dates'
 import { IPattern, IPatternMinMax, IPredictions, ITurnip, Time, TPredictions, TWeekPrices } from "../components/TurnipTypes";
@@ -22,14 +23,28 @@ export class TurnipPriceStore {
       cleanTurnips: action,
     })
     if (typeof window !== 'undefined') {
-      const storedJson = localStorage.getItem('TurnipPriceStore')
-      if (storedJson) Object.assign(this, JSON.parse(storedJson))
+      const url_turnips = new URLSearchParams(window.location.search).get('data')
+      const decompressed_turnips = (url_turnips !== null ? decompress(url_turnips) : null)
+      if (decompressed_turnips !== null) {
+        console.log("Loading turnips from URL.")
+        this.turnips = JSON.parse(decompressed_turnips)
+      } else {
+        console.log("Loading turnips from local storage.")
+        const storedJson = localStorage.getItem('TurnipPriceStore')
+        if (storedJson) {
+          Object.assign(this, JSON.parse(storedJson))
+        }
+      }
       this.cleanTurnips()
     }
     autorun(() => {
       console.log("Saving current state to local storage.")
       if (typeof window !== 'undefined') localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
     })
+  }
+
+  public getTurnips = () => {
+    return this.turnips
   }
 
   // Creates a fresh TurnipPrice on the client and the server.

@@ -1,4 +1,4 @@
-import { IPatternMultipliers } from "./TurnipTypes"
+import { IPatternContainer } from "./TurnipTypes"
 
 const getEmptyPriceList = () => { return Array(14).fill('') }
 
@@ -211,7 +211,7 @@ const getPattern3Multipliers = () => {
   }
 }
 
-export const getPatterns = (): IPatternMultipliers => {
+export const getPatterns = (): IPatternContainer => {
   return {
     pattern0: getPattern0Multipliers(),
     pattern1: getPattern1Multipliers(),
