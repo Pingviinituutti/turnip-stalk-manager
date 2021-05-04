@@ -30,14 +30,20 @@ export const TurnipPriceManager = observer(() => {
 export const TurnipCalendar = observer(() => {
   const { turnipPriceStore: tps } = useStores();
 
-  const tileColor = ({ date, view }) => {
+  const tileColor = ({ date = new Date(), view = '' }) => {
     if (view === 'month') {
       if (!date.getDay()) return 'turnip-buy-day'
       return 'turnip-sell-day'
     }
   }
 
-  const tileContent = ({ date, view, weekNumber }) => {
+  interface TileContentProps {
+    date: Date
+    view: string
+    weekNumber: number
+  }
+
+  const tileContent = ({ date = new Date(), view = '', weekNumber = -1}) => {
     const tile_uuid = uuidv4();
     if (view === 'month') {
       const date_str = date2datestr(date)
@@ -51,7 +57,7 @@ export const TurnipCalendar = observer(() => {
       return <TurnipPriceDialog
         morningTurnip={morningTurnip}
         noonTurnip={noonTurnip}
-        propKey={tile_uuid}
+        tileUuid={tile_uuid}
       />
     } else if (view === 'week-number') {
       // const date_str = date_to_string(date)
@@ -68,6 +74,7 @@ export const TurnipCalendar = observer(() => {
     <>
       <Calendar
         value={new Date()}
+        // @ts-ignore
         tileContent={tileContent}
         tileClassName={tileColor}
         showWeekNumbers

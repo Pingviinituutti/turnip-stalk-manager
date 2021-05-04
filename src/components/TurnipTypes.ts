@@ -6,6 +6,7 @@ export interface ITurnip {
   price?: number
 }
 
+export type TPatterns = 'pattern0' | 'pattern1' | 'pattern2' | 'pattern3'
 export type TPrice = (number | '')
 
 export type TWeekPrices = (TPrice)[]
@@ -27,6 +28,7 @@ export interface IPattern {
   pattern1?: number // PATTERN 1: decreasing middle, high spike, random low
   pattern2?: number // PATTERN 2: consistently decreasing
   pattern3?: number // PATTERN 3: decreasing, spike, decreasing
+  // [key: string]: number
 }
 
 export interface IPredictionProps {
@@ -39,6 +41,9 @@ export interface IPredictions {
   pattern1?: IPredictionProps
   pattern2?: IPredictionProps
   pattern3?: IPredictionProps
+}
+export type TPredictions = IPredictions & {
+  [key in TPatterns]: IPredictionProps
 }
 
 export interface IPredictionsObj {

@@ -6,6 +6,8 @@
   "author": "Henrik Hillner <henrik@hillner.fi>",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
+    "@types/react-calendar": "^3.1.4",
+    "@types/uuid": "^8.3.0",
     "gatsby": "^3.2.1",
     "gatsby-plugin-gatsby-cloud": "^2.2.0",
     "gatsby-plugin-image": "^1.2.0",
@@ -13,6 +15,7 @@
     "gatsby-plugin-offline": "^4.2.0",
     "gatsby-plugin-react-helmet": "^4.2.0",
     "gatsby-plugin-sharp": "^3.2.0",
+    "gatsby-plugin-typescript": "^3.4.0",
     "gatsby-source-filesystem": "^3.2.0",
     "gatsby-transformer-sharp": "^3.2.0",
     "mobx": "^6.2.0",

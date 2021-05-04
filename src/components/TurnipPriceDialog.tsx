@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from "react"
 import { observer } from "mobx-react"
 
 import Button from '@material-ui/core/Button';
@@ -12,7 +12,13 @@ import { useStores } from '../stores';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { ITurnip, Time } from './TurnipTypes';
 
-export const TurnipPriceDialog = observer((props) => {
+interface PriceDialogProps {
+  morningTurnip: ITurnip
+  noonTurnip: ITurnip
+  tileUuid: string
+}
+
+export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
   const [open, setOpen] = React.useState(false);
   const [morningTurnip, setMorningTurnip] = React.useState(props.morningTurnip);
   const [morningPrice, setMorningPrice] = React.useState('')
@@ -32,12 +38,12 @@ export const TurnipPriceDialog = observer((props) => {
 
   const handleClickOpen = () => {
     if (morningTurnip !== undefined && morningTurnip.price !== undefined) {
-      setMorningPrice(morningTurnip.price)
-      setOriginalMorningPrice(morningTurnip.price)
+      setMorningPrice(morningTurnip.price.toFixed())
+      setOriginalMorningPrice(morningTurnip.price.toFixed())
     }
     if (noonTurnip !== undefined && noonTurnip.price !== undefined) {
-      setNoonPrice(noonTurnip.price)
-      setOriginalNoonPrice(noonTurnip.price)
+      setNoonPrice(noonTurnip.price.toFixed())
+      setOriginalNoonPrice(noonTurnip.price.toFixed())
     }
     setOpen(true);
   };
@@ -45,9 +51,9 @@ export const TurnipPriceDialog = observer((props) => {
 
   const resetTurnip = (time: Time) => {
     if (time === 'morning') {
-      setMorningTurnip({ day: morningTurnip.day, time: 'morning', price: originalMorningPrice })
+      setMorningTurnip({ day: morningTurnip.day, time: 'morning', price: parseInt(originalMorningPrice) })
     } else {
-      setNoonTurnip({ day: noonTurnip.day, time: 'afternoon', price: originalNoonPrice })
+      setNoonTurnip({ day: noonTurnip.day, time: 'afternoon', price: parseInt(originalNoonPrice) })
     }
   }
 
@@ -56,7 +62,7 @@ export const TurnipPriceDialog = observer((props) => {
       setMorningPrice(originalMorningPrice)
       resetTurnip('morning')
     } else {
-      setOriginalMorningPrice(morningTurnip.price)
+      setOriginalMorningPrice(morningTurnip.price?.toFixed())
       tps.updateTurnipPrice(morningTurnip)
     }
     if (noonTurnip !== undefined) {
@@ -64,7 +70,7 @@ export const TurnipPriceDialog = observer((props) => {
         setNoonPrice(originalNoonPrice)
         resetTurnip('afternoon')
       } else {
-        setOriginalNoonPrice(noonTurnip.price)
+        setOriginalNoonPrice(noonTurnip.price?.toFixed())
         tps.updateTurnipPrice(noonTurnip)
       }
     }
@@ -154,7 +160,7 @@ export const TurnipPriceDialog = observer((props) => {
         <TextField
           autoFocus
           margin="dense"
-          id={props.propKey}
+          id={props.tileUuid + 'morning'}
           label="Price"
           type="number"
           value={morningPrice}
@@ -175,7 +181,7 @@ export const TurnipPriceDialog = observer((props) => {
         <TextField
           autoFocus
           margin="dense"
-          id={props.propKey}
+          id={props.tileUuid + 'morning'}
           label="Morning price"
           type="number"
           value={morningPrice}
@@ -188,7 +194,7 @@ export const TurnipPriceDialog = observer((props) => {
         <TextField
           autoFocus={morningPrice !== '' ? true : false}
           margin="dense"
-          id={props.propKey}
+          id={props.tileUuid + 'noon'}
           label="Noon price"
           type="number"
           value={noonPrice}
@@ -203,7 +209,7 @@ export const TurnipPriceDialog = observer((props) => {
   }
 
   return (
-    <div key={props.tile_uuid}>
+    <div key={props.tileUuid}>
       {renderTurnipPriceContent()}
       <Dialog open={open} onClose={handleClose} aria-labelledby="turnip-price-dialog">
         <DialogTitle id="turnip-price-dialog">{morningTurnip.day.includes('Sun') ? "Set turnip buy price" : "Set turnip sell prices"}</DialogTitle>

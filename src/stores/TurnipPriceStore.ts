@@ -1,8 +1,12 @@
-import { makeAutoObservable, autorun, makeObservable, action, observable, computed } from "mobx"
-import { CALENDAR_TYPES } from "react-calendar/src/shared/const";
+import { autorun, makeObservable, action, observable } from "mobx"
+// @ts-ignore
 import { getWeekNumber } from 'react-calendar/src/shared/dates'
-import { IPattern, IPatternContainer, IPatternMinMax, IPredictionProps, IPredictions, ITurnip, Time, TWeekPrices } from "../components/TurnipTypes";
-import { date2datestr, getEmptyPriceList, isValidDate } from "../components/helpers";
+import { IPattern, IPatternMinMax, IPredictions, ITurnip, Time, TPredictions, TWeekPrices } from "../components/TurnipTypes";
+import { date2datestr, getEmptyPriceList, isValidDate, CALENDAR_TYPES } from "../components/helpers";
+
+const calculateNumPossiblePatterns = (patterns: IPredictions) => {
+  return Object.values(patterns).reduce((acc, prev) => (acc + (+ (prev.possiblePatterns?.mins.length > 0))), 0)
+}
 
 export class TurnipPriceStore {
   turnips: ITurnip[] = []
@@ -16,7 +20,6 @@ export class TurnipPriceStore {
       deleteTurnipAtIndex: action,
       updateTurnipPrice: action,
       cleanTurnips: action,
-      // predictWeek: computed,
     })
     if (typeof window !== 'undefined') {
       const storedJson = localStorage.getItem('TurnipPriceStore')
@@ -151,89 +154,78 @@ export class TurnipPriceStore {
 
   // Predictions part
   public predictWeek(week: number, year: number) {
-    console.log(`Trying to predict for week number ${week}`)
     const turnips = this.getWeekTurnips(week, year)
     const prices = constructWeekPrices(turnips)
 
     const prevTurnips = this.getWeekTurnips(week - 1, year)
     const prevPrices = constructWeekPrices(prevTurnips)
 
-    const prediction: IPredictions = {
+    const prediction: TPredictions = {
       pattern0: { probability: 0},
       pattern1: { probability: 0},
       pattern2: { probability: 0},
       pattern3: { probability: 0},
     }
 
+    let k: keyof typeof prediction
+
     if (prevTurnips.length === 0 || prevPrices.slice(2).every(p => p === '')) {
-      // If previous week has no prices, just recognise current pattern
-      if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
-        // just give NaNs as probability if current week has no prices
-        prediction.pattern0.probability = NaN
-        prediction.pattern1.probability = NaN
-        prediction.pattern2.probability = NaN
-        prediction.pattern3.probability = NaN
-      } 
-      else {
-        // Else recognise the pattern
+      // If previous week has no prices, just recognise current pattern 
+      // But only if we have some sell prices defined
+      if ((turnips.length > 0 || prices.slice(2).some(p => p !== ''))) {
+        console.log(`Trying to recognize pattern for week ${week}`)
         const currentPattern = getPossiblePatterns(prices)
-        const numPossiblePatterns = Object.values(currentPattern)
-          .reduce((acc, curr) => (acc + (+ curr.possiblePatterns.mins.length > 0)), 0)
+        const numPossiblePatterns = calculateNumPossiblePatterns(currentPattern)
         console.log("Number of possible patterns in week " + (week) + ": " + numPossiblePatterns)
   
-        Object.keys(currentPattern).forEach((key, index) => {
-          if (currentPattern[key].possiblePatterns.mins.length > 0) {
-            currentPattern[key].probability = 1
-            prediction[key].probability = 1 / numPossiblePatterns
+        for (k in currentPattern) {
+          if (currentPattern[k].possiblePatterns.mins.length > 0) {
+            prediction[k].probability = 1 / numPossiblePatterns
           }
-        })
+        }
         console.log("Current week probabilities: ", JSON.stringify(prediction))
       }
-    } 
+    }
     else {
       // Else previous week has prices, recognise its pattern!
+      console.log(`Trying to recognize pattern for previous week ${week - 1}`)
       const previousPattern = getPossiblePatterns(prevPrices)
       console.log(`Previous week (${week - 1}) possible patterns: `, previousPattern)
-      const numPossiblePreviousPatterns = Object.values(previousPattern)
-        .reduce((acc, prev) => (acc + (+ prev.possiblePatterns?.mins.length > 0)), 0)
+      const numPossiblePreviousPatterns = calculateNumPossiblePatterns(previousPattern)
       console.log(`Number of possible patterns in previous week (${week - 1}): ${numPossiblePreviousPatterns}`)
 
       if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
         // If there are no prices for current week yet, predict according to previous weeks possible patterns
-        Object.keys(previousPattern).forEach((key, index) => {
-          if (previousPattern[key].possiblePatterns?.mins.length > 0) {
-            previousPattern[key].probability = 1
-            const patternNumber = parseInt(key.slice(-1))
+        for (k in previousPattern) {
+          if (previousPattern[k].possiblePatterns?.mins.length > 0) {
+            const patternNumber = parseInt(k.slice(-1))
             const probabilities = nextPatternProbabilities(patternNumber)
             console.log("Next pattern probabilities: ", probabilities)
-            prediction.pattern0.probability = probabilities.pattern0 / numPossiblePreviousPatterns
-            prediction.pattern1.probability = probabilities.pattern1 / numPossiblePreviousPatterns
-            prediction.pattern2.probability = probabilities.pattern2 / numPossiblePreviousPatterns
-            prediction.pattern3.probability = probabilities.pattern3 / numPossiblePreviousPatterns
+            prediction.pattern0.probability += probabilities.pattern0 / numPossiblePreviousPatterns
+            prediction.pattern1.probability += probabilities.pattern1 / numPossiblePreviousPatterns
+            prediction.pattern2.probability += probabilities.pattern2 / numPossiblePreviousPatterns
+            prediction.pattern3.probability += probabilities.pattern3 / numPossiblePreviousPatterns
           }
-        })
-        console.log(previousPattern)
+        }
       } else {
         // Else, recognise previous week pattern
         const currentPattern = getPossiblePatterns(prices)
         console.log(`Current week (${week}) possible patterns: `, currentPattern)
-        const numPossiblePatterns = Object.values(currentPattern).reduce((acc, curr) => (acc + (+ curr.possiblePatterns.mins.length > 0)), 0)
-        Object.keys(previousPattern).forEach((key, index) => {
-          if (previousPattern[key].possiblePatterns?.mins.length > 0) {
-            const patternNumber = parseInt(key.slice(-1))
+        
+        for (k in previousPattern) {
+          if (k in previousPattern && previousPattern[k].possiblePatterns?.mins.length > 0) {
+            const patternNumber = parseInt(k.slice(-1))
             const probabilities = nextPatternProbabilities(patternNumber)
-            Object.keys(currentPattern).forEach((key, index) => {
-              if (currentPattern[key].possiblePatterns?.mins.length > 0) {
-                prediction[key].probability += probabilities[key]
+            Object.keys(currentPattern).forEach((k: keyof typeof prediction, index) => {
+              if (currentPattern[k].possiblePatterns?.mins.length > 0) {
+                prediction[k].probability += probabilities[k]
               }
             })
           }
-        })
+        }
         // Normalize probabilities
         const tot = Object.values(prediction).reduce((acc, pred) => (acc + pred.probability), 0)
-        Object.keys(prediction).forEach((key, index) => {
-          prediction[key].probability /= tot
-        })
+        for (k in prediction) { prediction[k].probability /= tot }
       }
     }
     return prediction
@@ -271,7 +263,7 @@ export const filterPossible = (prices: TWeekPrices, patterns: IPatternMinMax) =>
   const basePrice = prices[0]
   if (basePrice > 0 && basePrice !== '') {
     let { mins, maxs } = patterns
-    const possible = { mins: [], maxs: [] }
+    const possible: IPatternMinMax = { mins: [], maxs: [] }
 
     for (let i = 0; i < mins.length; i++) {
       const possibilities = []
