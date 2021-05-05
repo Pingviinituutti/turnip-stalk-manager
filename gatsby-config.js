@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `AC NH: Turnip stalk manager`,
+    title: `AC NH: Turnip Stalk Manager`,
     description: ``,
     author: `Henrik Hillner`,
   },
