@@ -26,6 +26,8 @@ div.turnip-sell-day {
 }
 
 .react-calendar__month-view__weekNumbers {
+  flex-basis: 12.5% !important;
+  flex-shrink: 0 !important;
   .react-calendar__tile {
     font-size: 14px;
     text-align: center;
