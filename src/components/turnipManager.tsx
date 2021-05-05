@@ -3,6 +3,9 @@ import { observer } from "mobx-react"
 import Calendar from 'react-calendar'
 import { v4 as uuidv4 } from 'uuid'
 import { compressToEncodedURIComponent as compress } from 'lz-string'
+import { MdShare, MdContentCopy } from "react-icons/md/"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './calendar.scss'
 
@@ -12,16 +15,76 @@ import { TurnipWeekPredicter } from "./turnipWeekPredicter";
 import { date2datestr } from "./helpers";
 import { ITurnip } from "./TurnipTypes";
 
-const copyToClipboard = (id: string) => {
+const share2Navigator = (id: string) => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
-  if (elem !== undefined) {
-    elem.select()
-    document.execCommand('copy')
-    elem.selectionStart = elem.selectionEnd = -1
+  if (elem === undefined) return
+  if (navigator.share) {
+    navigator.share({
+        title: 'Turnip Stalk Manager',
+        text: 'Take a look at my turnip prices!',
+        url: elem.value,
+      })
+      .then(() => console.log('Successful share'))
+      .catch((error) => console.log('Error sharing', error));
+  } else {
+    console.log('Share not supported on this browser, do it the old way.');
+    copyToClipboard(id)
   }
 }
 
-export const TurnipPriceManager = observer(() => {
+const copyToClipboard = (id: string) => {
+  const elem = document.getElementById(id) as HTMLTextAreaElement
+  if (elem !== undefined) {
+    console.log('Share not supported on this browser, do it the old way.');
+    elem.select()
+    document.execCommand('copy')
+    elem.selectionStart = elem.selectionEnd = -1
+    elem.blur()
+    toast.success("JSON copied to clipboard!", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+    })
+  }
+}
+
+export const TurnipJSONArea = observer(() => {
+  if (typeof window === 'undefined') return null
+  const { turnipPriceStore: tps } = useStores()
+  const turnips = tps.getTurnips()
+  const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
+
+  return (
+    <div className={'JSON-area'}>
+      <h2>Turnip price data JSON</h2>
+      <textarea 
+        id={'turnip-json-textarea'}
+        className={'turnip-json-data'}
+        value={json_turnips}
+        readOnly
+      ></textarea>
+      <button title={"Copy turnip JSON to clipboard"}  onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
+      <ToastContainer 
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover
+        limit={1}
+      />
+    </div>
+  )
+})
+
+export const TurnipShareLink = observer(() => {
   if (typeof window === 'undefined') return null
   const { turnipPriceStore: tps } = useStores()
   const turnips = tps.getTurnips()
@@ -33,22 +96,16 @@ export const TurnipPriceManager = observer(() => {
   compressed_url.searchParams.set('data', compressed_turnips)
 
   return (
-    <div>
-      <h2>Turnip price data JSON</h2>
+    <div className={'turnip-share-link'}>
+      <button title={"Copy link"} onClick={() => share2Navigator('turnip-json-textarea-encoded')}><MdShare /></button>
+      <h2>Share your turnip prices (or save for own use)</h2>
       <textarea 
-        id={'turnip-json-textarea'}
-        className={'turnip-json-data'}
-        value={json_turnips}
-        readOnly
-      ></textarea>
-      <button onClick={() => copyToClipboard('turnip-json-textarea')}>📋</button>
-      <textarea 
+        hidden
         id={'turnip-json-textarea-encoded'}
         className={'turnip-json-data'}
         value={compressed_url.toString()}
         readOnly
       ></textarea>
-      <button onClick={() => copyToClipboard('turnip-json-textarea-encoded')}>📋</button>
     </div>
   )
 })
@@ -90,15 +147,13 @@ export const TurnipCalendar = observer(() => {
   }
 
   return (
-    <>
-      <Calendar
-        value={new Date()}
-        // @ts-ignore
-        tileContent={tileContent}
-        tileClassName={tileColor}
-        showWeekNumbers
-        calendarType={'US'}
-      />
-    </>
+    <Calendar
+      value={new Date()}
+      // @ts-ignore
+      tileContent={tileContent}
+      tileClassName={tileColor}
+      showWeekNumbers
+      calendarType={'US'}
+    />
   )
 })

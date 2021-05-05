@@ -5,13 +5,14 @@ import * as React from "react"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-import { TurnipCalendar, TurnipPriceManager } from "../components/turnipManager"
+import { TurnipCalendar, TurnipJSONArea, TurnipShareLink } from "../components/turnipManager"
 
 const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
     <TurnipCalendar />
-    <TurnipPriceManager />
+    <TurnipShareLink />
+    <TurnipJSONArea />
   </Layout>
 )
 

@@ -28,6 +28,8 @@
     "react-calendar": "https://github.com/Pingviinituutti/react-calendar#add-tilecontent-to-week-number",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
+    "react-icons": "^4.2.0",
+    "react-toastify": "^7.0.4",
     "sass": "^1.32.12",
     "uuid": "^8.3.2"
   },
