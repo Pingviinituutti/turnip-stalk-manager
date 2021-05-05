@@ -140,14 +140,18 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
     if (morningTurnip.day.includes('Sun')) {
       return (
         <div className={'turnip-buy-day'} onClick={handleClickOpen}>
-          <span>Buy price: {morningTurnip.price ? morningTurnip.price + ' B' : '?'}</span>
+          <h5>Buy price: </h5><p>{morningTurnip.price ? morningTurnip.price + ' B' : '?'}</p>
         </div>
       )
     } else {
       return (
         <div className={'turnip-sell-day'} onClick={handleClickOpen}>
-          <span>M: {morningTurnip.price ? morningTurnip.price + ' B' : '?'}</span><br />
-          <span>N: {noonTurnip.price ? noonTurnip.price + ' B' : '?'}</span>
+          <div className={'morning'}>
+            <h5>Morning price: </h5><p>{morningTurnip.price ? morningTurnip.price + ' B' : '?'}</p>
+          </div>
+          <div className={'noon'}>
+            <h5>Noon price:    </h5><p>{noonTurnip.price ? noonTurnip.price + ' B' : '?'}</p>
+          </div>
         </div>
       )
     }

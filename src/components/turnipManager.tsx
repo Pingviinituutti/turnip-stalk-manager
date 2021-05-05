@@ -4,8 +4,7 @@ import Calendar from 'react-calendar'
 import { v4 as uuidv4 } from 'uuid'
 import { compressToEncodedURIComponent as compress } from 'lz-string'
 
-// import 'react-calendar/dist/Calendar.css';
-import './calendar.css'
+import './calendar.scss'
 
 import { useStores } from "../stores/index"
 import { TurnipPriceDialog } from "./TurnipPriceDialog";
@@ -81,7 +80,6 @@ export const TurnipCalendar = observer(() => {
         tileUuid={tile_uuid}
       />
     } else if (view === 'week-number') {
-      // const date_str = date_to_string(date)
       return (
         <TurnipWeekPredicter 
           date={date}

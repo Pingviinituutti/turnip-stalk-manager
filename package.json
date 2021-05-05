@@ -15,6 +15,7 @@
     "gatsby-plugin-manifest": "^3.2.0",
     "gatsby-plugin-offline": "^4.2.0",
     "gatsby-plugin-react-helmet": "^4.2.0",
+    "gatsby-plugin-sass": "^4.4.0",
     "gatsby-plugin-sharp": "^3.2.0",
     "gatsby-plugin-typescript": "^3.4.0",
     "gatsby-source-filesystem": "^3.2.0",
@@ -27,6 +28,7 @@
     "react-calendar": "https://github.com/Pingviinituutti/react-calendar#add-tilecontent-to-week-number",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
+    "sass": "^1.32.12",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
