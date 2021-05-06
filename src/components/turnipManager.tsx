@@ -56,7 +56,6 @@ export const TurnipJSONArea = observer(() => {
   const { turnipPriceStore: tps } = useStores()
   const turnips = tps.getTurnips()
   const json_turnips = JSON.stringify(turnips)
-  console.log("JSON TURNIPS ",json_turnips)
 
   return (
     <div className={'JSON-area'}>
