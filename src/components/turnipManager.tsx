@@ -35,7 +35,6 @@ const share2Navigator = (id: string) => {
 const copyToClipboard = (id: string, message = "JSON copied to clipboard!") => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
   if (elem !== undefined) {
-    console.log('Share not supported on this browser, do it the old way.');
     elem.select()
     document.execCommand('copy')
     elem.selectionStart = elem.selectionEnd = -1
@@ -53,9 +52,11 @@ const copyToClipboard = (id: string, message = "JSON copied to clipboard!") => {
 }
 
 export const TurnipJSONArea = observer(() => {
+  if (typeof window === 'undefined') return (<div className={'JSON-area'} />)
   const { turnipPriceStore: tps } = useStores()
   const turnips = tps.getTurnips()
-  const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
+  const json_turnips = JSON.stringify(turnips)
+  console.log("JSON TURNIPS ",json_turnips)
 
   return (
     <div className={'JSON-area'}>
@@ -74,33 +75,31 @@ export const TurnipJSONArea = observer(() => {
 })
 
 export const TurnipShareLink = observer(() => {
-  let compressed_url
-  if (typeof window === 'undefined') {
-    compressed_url = ''
-  } else {
+  if (typeof window !== 'undefined') {
     const { turnipPriceStore: tps } = useStores()
     const turnips = tps.getTurnips()
     const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
     const compressed_turnips = compress(json_turnips)
     const json_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
-    compressed_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
+    const compressed_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
     json_url.searchParams.set('data', encodeURIComponent(JSON.stringify(JSON.parse(json_turnips))))
     compressed_url.searchParams.set('data', compressed_turnips)
-  }
 
-  return (
-    <div className={'turnip-share-link'}>
-      <button title={"Copy link"} onClick={() => share2Navigator('turnip-json-textarea-encoded')}><MdShare /></button>
-      <h2>Share your turnip prices (or save for own use)</h2>
-      <textarea
-        hidden
-        id={'turnip-json-textarea-encoded'}
-        className={'turnip-json-data'}
-        value={compressed_url.toString()}
-        readOnly
-      />
-    </div>
-  )
+    return (
+      <div className={'turnip-share-link'}>
+        <button title={"Copy link"} onClick={() => share2Navigator('turnip-json-textarea-encoded')}><MdShare /></button>
+        <h2>Share your turnip prices (or save for own use)</h2>
+        <textarea
+          hidden
+          id={'turnip-json-textarea-encoded'}
+          className={'turnip-json-data'}
+          value={compressed_url.toString()}
+          readOnly
+        />
+      </div>
+    )
+  }
+  return <div className={'turnip-share-link'} />
 })
 
 export const TurnipCalendar = observer(() => {

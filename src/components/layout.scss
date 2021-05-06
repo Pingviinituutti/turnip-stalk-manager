@@ -94,7 +94,7 @@ button {
     justify-content: space-between;
   }
   textarea {
-    width: 80%;
+    min-width: calc(100% - 70px);
     max-width: calc(100% - 70px);
   }
   button {
