@@ -1,6 +1,7 @@
 # AC NH: Turnip Stalk Manager
 
 A small app to help track your turnip prices and help you decide whether the odds are with you for the next week.
+A live version of the repository is hosted on [Netlify](https://turnip-stalk-manager.netlify.app/).
 
 Built with [Gatsby](https://www.gatsbyjs.com/docs/quick-start/).
 Gatsby Cloud is an end-to-end cloud platform specifically built for the Gatsby framework that combines a modern developer experience with an optimized, global edge network.
