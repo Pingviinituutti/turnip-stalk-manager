@@ -1,10 +1,20 @@
-$brown: #3A2618;
-$green: #81B340;
-$dark-green: #51840f;
-$pink: #D9989E;
-$violet: #522A3F;
+// https://coolors.co/51840f-81b340-f2e8cf-d9989e-bc4749-522a3f-6a3125
+$avocado: #51840f;
+$green-ryb: #81b340;
+$eggshell: #f2e8cf;
+$pastel-pink: #d9989e;
+$deep-chestnut: #bc4749;
+$old-mauve: #522a3f;
+$liver-organ: #6a3125;
+
+$brown: $liver-organ;
+$green: $green-ryb;
+$dark-green: $avocado;
+$pink: $pastel-pink;
+$red: #dc090d;
+$violet: $old-mauve;
 $gray: #797D81;
+$light-gray: #e0e0e0;
 $white: #FBFBFB;
-$cream: #FFF0C2;
 $font-black: #222;
 $font-white: #EEE;

@@ -28,11 +28,11 @@ const share2Navigator = (id: string) => {
       .catch((error) => console.log('Error sharing', error));
   } else {
     console.log('Share not supported on this browser, do it the old way.');
-    copyToClipboard(id)
+    copyToClipboard(id, "Copied link to clipboard!")
   }
 }
 
-const copyToClipboard = (id: string) => {
+const copyToClipboard = (id: string, message = "JSON copied to clipboard!") => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
   if (elem !== undefined) {
     console.log('Share not supported on this browser, do it the old way.');
@@ -40,7 +40,7 @@ const copyToClipboard = (id: string) => {
     document.execCommand('copy')
     elem.selectionStart = elem.selectionEnd = -1
     elem.blur()
-    toast.success("JSON copied to clipboard!", {
+    toast.success(message, {
       position: "top-center",
       autoClose: 2000,
       hideProgressBar: true,
@@ -61,13 +61,15 @@ export const TurnipJSONArea = observer(() => {
   return (
     <div className={'JSON-area'}>
       <h2>Turnip price data JSON</h2>
-      <textarea 
-        id={'turnip-json-textarea'}
-        className={'turnip-json-data'}
-        value={json_turnips}
-        readOnly
-      ></textarea>
-      <button title={"Copy turnip JSON to clipboard"}  onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
+      <div className={'JSON-container'}>
+        <textarea 
+          id={'turnip-json-textarea'}
+          className={'turnip-json-data'}
+          value={json_turnips}
+          readOnly
+        ></textarea>
+        <button title={"Copy turnip JSON to clipboard"}  onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
+      </div>
       <ToastContainer 
         position="top-center"
         autoClose={2000}
@@ -115,8 +117,8 @@ export const TurnipCalendar = observer(() => {
 
   const tileColor = ({ date = new Date(), view = '' }) => {
     if (view === 'month') {
-      if (!date.getDay()) return 'turnip-buy-day'
-      return 'turnip-sell-day'
+      if (!date.getDay()) return 'turnip-buy-day-tile'
+      return 'turnip-sell-day-tile'
     }
   }
 
