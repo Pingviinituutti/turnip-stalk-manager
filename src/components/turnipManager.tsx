@@ -4,7 +4,7 @@ import Calendar from 'react-calendar'
 import { v4 as uuidv4 } from 'uuid'
 import { compressToEncodedURIComponent as compress } from 'lz-string'
 import { MdShare, MdContentCopy } from "react-icons/md/"
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './calendar.scss'
@@ -20,10 +20,10 @@ const share2Navigator = (id: string) => {
   if (elem === undefined) return
   if (navigator.share) {
     navigator.share({
-        title: 'Turnip Stalk Manager',
-        text: 'Take a look at my turnip prices!',
-        url: elem.value,
-      })
+      title: 'Turnip Stalk Manager',
+      text: 'Take a look at my turnip prices!',
+      url: elem.value,
+    })
       .then(() => console.log('Successful share'))
       .catch((error) => console.log('Error sharing', error));
   } else {
@@ -53,7 +53,6 @@ const copyToClipboard = (id: string, message = "JSON copied to clipboard!") => {
 }
 
 export const TurnipJSONArea = observer(() => {
-  if (typeof window === 'undefined') return null
   const { turnipPriceStore: tps } = useStores()
   const turnips = tps.getTurnips()
   const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
@@ -62,52 +61,44 @@ export const TurnipJSONArea = observer(() => {
     <div className={'JSON-area'}>
       <h2>Turnip price data JSON</h2>
       <div className={'JSON-container'}>
-        <textarea 
+        <textarea
           id={'turnip-json-textarea'}
           className={'turnip-json-data'}
           value={json_turnips}
           readOnly
-        ></textarea>
-        <button title={"Copy turnip JSON to clipboard"}  onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
+        />
+        <button title={"Copy turnip JSON to clipboard"} onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
       </div>
-      <ToastContainer 
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable={false}
-        pauseOnHover
-        limit={1}
-      />
     </div>
   )
 })
 
 export const TurnipShareLink = observer(() => {
-  if (typeof window === 'undefined') return null
-  const { turnipPriceStore: tps } = useStores()
-  const turnips = tps.getTurnips()
-  const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
-  const compressed_turnips = compress(json_turnips)
-  const json_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
-  const compressed_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
-  json_url.searchParams.set('data', encodeURIComponent(JSON.stringify(JSON.parse(json_turnips))))
-  compressed_url.searchParams.set('data', compressed_turnips)
+  let compressed_url
+  if (typeof window === 'undefined') {
+    compressed_url = ''
+  } else {
+    const { turnipPriceStore: tps } = useStores()
+    const turnips = tps.getTurnips()
+    const json_turnips = JSON.stringify(JSON.parse(JSON.stringify(turnips)))
+    const compressed_turnips = compress(json_turnips)
+    const json_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
+    compressed_url = new URL(typeof window !== 'undefined' ? window.location.href : '')
+    json_url.searchParams.set('data', encodeURIComponent(JSON.stringify(JSON.parse(json_turnips))))
+    compressed_url.searchParams.set('data', compressed_turnips)
+  }
 
   return (
     <div className={'turnip-share-link'}>
       <button title={"Copy link"} onClick={() => share2Navigator('turnip-json-textarea-encoded')}><MdShare /></button>
       <h2>Share your turnip prices (or save for own use)</h2>
-      <textarea 
+      <textarea
         hidden
         id={'turnip-json-textarea-encoded'}
         className={'turnip-json-data'}
         value={compressed_url.toString()}
         readOnly
-      ></textarea>
+      />
     </div>
   )
 })
@@ -122,7 +113,7 @@ export const TurnipCalendar = observer(() => {
     }
   }
 
-  const tileContent = ({ date = new Date(), view = '', weekNumber = -1}) => {
+  const tileContent = ({ date = new Date(), view = '', weekNumber = -1 }) => {
     const tile_uuid = uuidv4();
     if (view === 'month') {
       const date_str = date2datestr(date)
@@ -133,14 +124,16 @@ export const TurnipCalendar = observer(() => {
         noonTurnip = tps.getTurnipFromDateAndTime(date_str, 'afternoon')[0]
         if (noonTurnip === undefined) noonTurnip = { day: date_str, time: 'afternoon', price: undefined }
       }
-      return <TurnipPriceDialog
-        morningTurnip={morningTurnip}
-        noonTurnip={noonTurnip}
-        tileUuid={tile_uuid}
-      />
+      return (
+        <TurnipPriceDialog
+          morningTurnip={morningTurnip}
+          noonTurnip={noonTurnip}
+          tileUuid={tile_uuid}
+        />
+      )
     } else if (view === 'week-number') {
       return (
-        <TurnipWeekPredicter 
+        <TurnipWeekPredicter
           date={date}
           weekNumber={weekNumber}
         />

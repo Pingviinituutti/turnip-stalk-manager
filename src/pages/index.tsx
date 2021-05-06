@@ -1,12 +1,11 @@
 import * as React from "react"
-import { Content } from "../components/content"
-import { Link } from "gatsby"
-// import { StaticImage } from "gatsby-plugin-image"
+import { ToastContainer } from "react-toastify"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
 import { TurnipCalendar, TurnipJSONArea, TurnipShareLink } from "../components/turnipManager"
+import { Content } from "../components/content"
 
 const IndexPage = () => (
   <Layout>
@@ -25,9 +24,11 @@ const IndexPage = () => (
         More information about abbreviations and how the Stalk Manager works is described below the price calendar.
       </p>
     </Content>
+
     <TurnipCalendar />
     <TurnipShareLink />
     <TurnipJSONArea />
+
     <Content title={"Usage instructions"}>
       <p>
         The Stalk Manager works like a calendar.
@@ -58,6 +59,18 @@ const IndexPage = () => (
         There you can also file your issues and pull requests.
       </p>
     </Content>
+    <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover
+        limit={1}
+      />
   </Layout>
 )
 
