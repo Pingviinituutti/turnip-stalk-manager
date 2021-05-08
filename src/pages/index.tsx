@@ -37,13 +37,13 @@ const IndexPage = () => (
       </p>
       <p>
         The possible patterns and their abbreviations are:
-        <ul>
-          <li>Fluctuating pattern – abbreviated as "Fluct."</li>
-          <li>Large spike – abbreviated as "L Spike"</li>
-          <li>Decreasing pattern – abbreviated as "Decr."</li>
-          <li>Small spike – abbreviated as "S Spike".</li>
-        </ul>
       </p>
+      <ul>
+        <li>Fluctuating pattern – abbreviated as "Fluct."</li>
+        <li>Large spike – abbreviated as "L Spike"</li>
+        <li>Decreasing pattern – abbreviated as "Decr."</li>
+        <li>Small spike – abbreviated as "S Spike".</li>
+      </ul>
       <p>
         The Stalk Manager is nice to track you turnip price history.
         But if you want to check out the possible minimum and maximum prices during a week, take a look at the fantastic <a href="https://turnipprophet.io">Turnip Prohet</a> site made by Mike Bryant.

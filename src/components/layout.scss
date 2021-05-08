@@ -35,7 +35,7 @@ body::before {
   }
 }
 
-h1, h2, h3, h4, h5, p, a, ::before {
+h1, h2, h3, h4, h5, p, a, ul, li, ::before {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   color: $font-black
 }
@@ -50,7 +50,7 @@ h1 {
   font-weight: 600;
 }
 
-h5, p, abbr, ::before {
+h5, p, abbr, ul, li, ::before {
   font-size: 14px;
 }
 
