@@ -89,7 +89,6 @@ export const TurnipShareLink = observer(() => {
         <button title={"Copy link"} onClick={() => share2Navigator('turnip-json-textarea-encoded')}><MdShare /></button>
         <h2>Share your turnip prices (or save for own use)</h2>
         <textarea
-          hidden
           id={'turnip-json-textarea-encoded'}
           className={'turnip-json-data encoded'}
           value={compressed_url.toString()}
