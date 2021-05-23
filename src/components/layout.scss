@@ -75,6 +75,11 @@ button {
   button {
     cursor: pointer;
   }
+  textarea.encoded {
+    width: 0;
+    height: 0;
+    opacity: 0.001;
+  }
 }
 
 .JSON-area {

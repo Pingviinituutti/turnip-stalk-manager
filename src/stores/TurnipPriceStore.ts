@@ -28,6 +28,7 @@ export class TurnipPriceStore {
       if (decompressed_turnips !== null) {
         console.log("Loading turnips from URL.")
         this.turnips = JSON.parse(decompressed_turnips)
+        window.history.pushState({}, document.title, "/")
       } else {
         console.log("Loading turnips from local storage.")
         const storedJson = localStorage.getItem('TurnipPriceStore')

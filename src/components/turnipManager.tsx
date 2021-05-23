@@ -28,11 +28,11 @@ const share2Navigator = (id: string) => {
       .catch((error) => console.log('Error sharing', error));
   } else {
     console.log('Share not supported on this browser, do it the old way.');
-    copyToClipboard(id, "Copied link to clipboard!")
+    copy2Clipboard(id, "Copied link to clipboard!")
   }
 }
 
-const copyToClipboard = (id: string, message = "JSON copied to clipboard!") => {
+const copy2Clipboard = (id: string, message = "JSON copied to clipboard!") => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
   if (elem !== undefined) {
     elem.select()
@@ -67,7 +67,7 @@ export const TurnipJSONArea = observer(() => {
           value={json_turnips}
           readOnly
         />
-        <button title={"Copy turnip JSON to clipboard"} onClick={() => copyToClipboard('turnip-json-textarea')}><MdContentCopy /></button>
+        <button title={"Copy turnip JSON to clipboard"} onClick={() => copy2Clipboard('turnip-json-textarea')}><MdContentCopy /></button>
       </div>
     </div>
   )
@@ -91,7 +91,7 @@ export const TurnipShareLink = observer(() => {
         <textarea
           hidden
           id={'turnip-json-textarea-encoded'}
-          className={'turnip-json-data'}
+          className={'turnip-json-data encoded'}
           value={compressed_url.toString()}
           readOnly
         />
