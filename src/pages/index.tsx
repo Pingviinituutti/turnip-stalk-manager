@@ -36,16 +36,17 @@ const IndexPage = () => (
         With these prices, the Stalk Manager can recognize the current weeks pattern, and when there are fewer than four alternatives, it can also give the probabilities of each pattern for the next week.
       </p>
       <p>
+        There are four different patterns, as explained on pages such as <a href="https://animalcrossing.fandom.com/wiki/White_turnip#Buying_and_selling_in_New_Horizons">Fandom's AC:NH turnip page</a>.
         The possible patterns and their abbreviations are:
       </p>
       <ul>
-        <li>Fluctuating pattern – abbreviated as "Fluct."</li>
+        <li>Fluctuating/random pattern – abbreviated as "Fluct."</li>
         <li>Large spike – abbreviated as "L Spike"</li>
         <li>Decreasing pattern – abbreviated as "Decr."</li>
         <li>Small spike – abbreviated as "S Spike".</li>
       </ul>
       <p>
-        The Stalk Manager is nice to track you turnip price history.
+        This Turnip Stalk Manager app is useful to logging your turnip price history.
         But if you want to check out the possible minimum and maximum prices during a week, take a look at the fantastic <a href="https://turnipprophet.io">Turnip Prohet</a> site made by Mike Bryant.
       </p>
     </Content>
