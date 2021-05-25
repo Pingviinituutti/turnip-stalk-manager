@@ -185,10 +185,10 @@ export class TurnipPriceStore {
 
     let k: keyof typeof prediction
 
-    if (prevTurnips.length === 0 || prevPrices.slice(2).every(p => p === '')) {
-      // If previous week has no prices, just recognise current pattern 
-      // But only if we have some sell prices defined
-      if ((turnips.length > 0 || prices.slice(2).some(p => p !== ''))) {
+    if (prevTurnips.length === 0 || prevPrices[0] === '' || prevPrices.slice(2).every(p => p === '')) {
+      // If previous week has no buy price or no sell prices, just recognise current pattern 
+      // But only if we have a buy price and some sell prices defined
+      if (prices[0] > 0 && (turnips.length > 0 || prices.slice(2).some(p => p !== ''))) {
         console.log(`Trying to recognize pattern for week ${week}`)
         const currentPattern = getPossiblePatterns(prices)
         const numPossiblePatterns = calculateNumPossiblePatterns(currentPattern)
@@ -203,14 +203,14 @@ export class TurnipPriceStore {
       }
     }
     else {
-      // Else previous week has prices, recognise its pattern!
+      // Else previous week has prices => recognise its pattern!
       console.log(`Trying to recognize pattern for previous week ${week - 1}`)
       const previousPattern = getPossiblePatterns(prevPrices)
       console.log(`Previous week (${week - 1}) possible patterns: `, previousPattern)
       const numPossiblePreviousPatterns = calculateNumPossiblePatterns(previousPattern)
       console.log(`Number of possible patterns in previous week (${week - 1}): ${numPossiblePreviousPatterns}`)
 
-      if (turnips.length === 0 || prices.slice(2).every(p => p === '')) {
+      if (turnips.length === 0 || prices[0] === '' || prices.slice(2).every(p => p === '')) {
         // If there are no prices for current week yet, predict according to previous weeks possible patterns
         for (k in previousPattern) {
           if (previousPattern[k].possiblePatterns?.mins.length > 0) {
