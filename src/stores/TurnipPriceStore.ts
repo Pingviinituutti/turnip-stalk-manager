@@ -288,10 +288,16 @@ export const filterPossible = (prices: TWeekPrices, patterns: IPatternMinMax) =>
           possibilities.push(true)
         } else {
           const p = prices[j] || 0
-          if (p && mins[i][j] && mins[i][j] > 0 && maxs[i][j] > 0) {
-            if (mins[i][j] <= p / basePrice && maxs[i][j] >= p / basePrice) {
+          const min = mins[i][j] || 0
+          const max = maxs[i][j] || 0
+          if (p && min && max) {
+            // const diffMin = min * basePrice - (p)
+            // const diffMax = max * basePrice - (p)
+            if (min * basePrice <= p && Math.ceil(max * basePrice) >= p) {
               possibilities.push(true)
             } else {
+              // if (p && min && min > 0 && Math.abs(diffMin) < 3) console.log(`Buy price: ${basePrice}, current rate: ${min}, current price ${p}, compared price ${min * basePrice}, Min possibility missed by ${diffMin.toFixed(2)}`)
+              // if (p && max && max > 0 && Math.abs(diffMax) < 3) console.log(`Buy price: ${basePrice}, current rate: ${max}, current price ${p}, compared price ${max * basePrice}, Max possibility missed by ${diffMax.toFixed(2)}`)
               possibilities.push(false)
             }
           }
