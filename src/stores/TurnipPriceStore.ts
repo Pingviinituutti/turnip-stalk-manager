@@ -175,6 +175,7 @@ export class TurnipPriceStore {
 
     const prevTurnips = this.getWeekTurnips(week - 1, year)
     const prevPrices = constructWeekPrices(prevTurnips)
+    let prevPatternStr = ''
 
     const prediction: TPredictions = {
       pattern0: { probability: 0},
@@ -229,7 +230,8 @@ export class TurnipPriceStore {
         console.log(`Current week (${week}) possible patterns: `, currentPattern)
         
         for (k in previousPattern) {
-          if (k in previousPattern && previousPattern[k].possiblePatterns?.mins.length > 0) {
+          if (previousPattern[k].possiblePatterns?.mins.length > 0) {
+            if (numPossiblePreviousPatterns === 1) prevPatternStr = k
             const patternNumber = parseInt(k.slice(-1))
             const probabilities = nextPatternProbabilities(patternNumber)
             Object.keys(currentPattern).forEach((k: keyof typeof prediction, index) => {
@@ -244,7 +246,11 @@ export class TurnipPriceStore {
         for (k in prediction) { prediction[k].probability /= tot }
       }
     }
-    return prediction
+    return {
+      prediction: prediction,
+      prices: prices,
+      previousPattern: prevPatternStr
+    }
   }
 }
 

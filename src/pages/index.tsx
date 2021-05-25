@@ -36,7 +36,7 @@ const IndexPage = () => (
         With these prices, the Stalk Manager can recognize the current weeks pattern, and when there are fewer than four alternatives, it can also give the probabilities of each pattern for the next week.
       </p>
       <p>
-        There are four different patterns, as explained on pages such as <a href="https://animalcrossing.fandom.com/wiki/White_turnip#Buying_and_selling_in_New_Horizons">Fandom's AC:NH turnip page</a>.
+        There are four different patterns, as explained on pages such as <a href="https://animalcrossing.fandom.com/wiki/White_turnip#Buying_and_selling_in_New_Horizons" target="_blank">Fandom's AC:NH turnip page</a>.
         The possible patterns and their abbreviations are:
       </p>
       <ul>
@@ -47,16 +47,16 @@ const IndexPage = () => (
       </ul>
       <p>
         This Turnip Stalk Manager app is useful to logging your turnip price history.
-        But if you want to check out the possible minimum and maximum prices during a week, take a look at the fantastic <a href="https://turnipprophet.io">Turnip Prohet</a> site made by Mike Bryant.
+        But if you want to check out the possible minimum and maximum prices during a week, take a look at the fantastic <a href="https://turnipprophet.io" target="_blank">Turnip Prohet</a> site made by Mike Bryant.
       </p>
     </Content>
     <Content title={"Credits"}>
       <p>
-        This site was inspired by finding a way to outplay the turnip stalk market, which would not have been possible without <a href="https://twitter.com/_Ninji/status/1244818665851289602?s=20">Ninji's dissassembling work of ACNH's source code</a>.
+        This site was inspired by finding a way to outplay the turnip stalk market, which would not have been possible without <a href="https://twitter.com/_Ninji/status/1244818665851289602?s=20" target="_blank">Ninji's dissassembling work of ACNH's source code</a>.
       </p>
       <h3>Source code and contributing</h3>
       <p>
-        The source code of this site can be found on <a href="https://github.com/Pingviinituutti/turnip-stalk-manager">GitHub</a>.
+        The source code of this site can be found on <a href="https://github.com/Pingviinituutti/turnip-stalk-manager" target="_blank">GitHub</a>.
         There you can also file your issues and pull requests.
       </p>
     </Content>

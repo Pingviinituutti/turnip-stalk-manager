@@ -42,7 +42,10 @@ div.turnip-sell-day {
     text-align: center;
     background: $eggshell;
     padding-top: 5px;
-    height: 103px;
+    height: 145px;
+    @media only screen and (min-width: 768px) {
+      height: 98px;
+    }
   }
   &::before {
     content: "Week";
@@ -54,6 +57,14 @@ div.turnip-sell-day {
     }
   }
 }
+
+.react-calendar__tile {
+  height: 150px;
+  @media only screen and (min-width: 768px) {
+    height: 103px;
+  }
+}
+
 .react-calendar__month-view__weekdays {
   height: 20px;
   .react-calendar__month-view__weekdays__weekday {
@@ -151,6 +162,10 @@ div.turnip-sell-day {
       margin-bottom: 0;
     }
   }
+  a.prophet-url {
+    margin-top: 15px;
+    font-size: 9px;
+  }
   @media only screen and (min-width: 768px) {
     justify-content: center;
     height: 80%;
@@ -161,6 +176,10 @@ div.turnip-sell-day {
       p {
         font-size: 12px;
       }
+    }
+    a.prophet-url {
+      margin-top: 0;
+      font-size: 12px;
     }
   }
 }

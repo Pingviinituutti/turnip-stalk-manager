@@ -15,7 +15,14 @@ export const TurnipWeekPredicter = observer((props: TurnipWeekPredicterProps) =>
   const [year, _] = React.useState(props !== undefined ? props.date.getFullYear() : new Date().getFullYear())
 
   if (props.weekNumber !== undefined) {
-    const possiblePatterns = tps.predictWeek(props.weekNumber, year)
+    const { 
+      prediction: possiblePatterns, 
+      prices,
+      previousPattern
+    } = tps.predictWeek(props.weekNumber, year)
+    prices.splice(1,1)
+    const prophetPrevPattern = (previousPattern !== '' ? previousPattern.substring(0, 7) + '=' + previousPattern.substring(7, previousPattern.length) : '')
+    const prophetURL = `https://turnipprophet.io?prices=${prices.join('.')}${previousPattern !== '' ? '&' + prophetPrevPattern : ''}`
     return (
       <div className={"pattern-predictions-container"}>
         {possiblePatterns.pattern0.probability
@@ -34,7 +41,9 @@ export const TurnipWeekPredicter = observer((props: TurnipWeekPredicterProps) =>
           ? <div className={"pattern-prediction"}><p>S Spike:</p><p>{`${(possiblePatterns.pattern3?.probability * 100).toFixed()}%`}</p></div>
           : null
         }
-
+        {
+          prices.some(p => p !== '') ? <a href={prophetURL} className={"prophet-url"} target="_blank">Possible prices</a> : null
+        }
       </div>
     )
   }
