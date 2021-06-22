@@ -197,9 +197,12 @@ export class TurnipPriceStore {
   
         for (k in currentPattern) {
           if (currentPattern[k].possiblePatterns.mins.length > 0) {
-            prediction[k].probability = 1 / numPossiblePatterns
+            prediction[k].probability = unknownPreviousWeekProbabilities[k]
           }
         }
+        // Normalize probabilities
+        const tot = Object.values(prediction).reduce((acc, pred) => (acc + pred.probability), 0)
+        for (k in prediction) { prediction[k].probability /= tot }
         console.log("Current week probabilities: ", JSON.stringify(prediction))
       }
     }
@@ -327,6 +330,13 @@ export const constructPatternProbability = (p0: number, p1: number, p2: number):
     pattern2: (p2 - p1) / tot,
     pattern3: (tot - p2) / tot,
   }
+}
+
+const unknownPreviousWeekProbabilities: IPattern = {
+  pattern0: 1.4,
+  pattern1: 1.05,
+  pattern2: 0.55,
+  pattern3: 1,
 }
 
 export const nextPatternProbabilities = (pattern: number) => {
