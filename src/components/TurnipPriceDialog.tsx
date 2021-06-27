@@ -77,6 +77,7 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
     setOpen(false)
     resetErrors()
   }
+  
   const handleCancel = () => {
     resetTurnip('morning')
     updateTurnipPrice('morning', originalMorningPrice)
@@ -86,6 +87,17 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
     }
     setOpen(false)
     resetErrors()
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if(e.key === "Enter") {
+      handleClose()
+    }
+    else if (e.key === "Escape") {
+      // Works too without stopPropagation, however, an unnecessary update request to mobx is sent in that case.
+      e.stopPropagation();
+      handleCancel()
+    }
   };
 
   const updateTurnipPrice = (time: Time, price: string) => {
@@ -159,7 +171,7 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
 
   const renderSundayDialog = () => {
     return (
-      <DialogContent>
+      <DialogContent onKeyDown={handleKey}>
         <DialogContentText>{morningTurnip.day}</DialogContentText>
         <TextField
           autoFocus
@@ -180,7 +192,7 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
 
   const renderSellPriceDialog = () => {
     return (
-      <DialogContent>
+      <DialogContent onKeyDown={handleKey}>
         <DialogContentText>{morningTurnip.day}</DialogContentText>
         <TextField
           autoFocus
