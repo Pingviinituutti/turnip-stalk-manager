@@ -100,10 +100,11 @@ export const TurnipJSONArea = observer(() => {
   const turnips = tps.getTurnips()
   const json_turnips = JSON.stringify(turnips)
 
-  const [jsonAutoUpdate, setJsonAutoUpdate] = React.useState(true)
+  const [jsonAutoUpdate, setJsonAutoUpdate] = React.useState(tps.getJsonAutoUpdate())
   const handleChange = (event: any) => {
-    if (jsonAutoUpdate) { // case: jsonAutoUpdate was true until now
-      setElementValue('turnip-json-textarea-editable', json_turnips)
+    tps.toggleJsonAutoSave()
+    if (tps.getJsonAutoUpdate()) {
+      setElementValue('turnip-json-textarea', json_turnips)
     }
     setJsonAutoUpdate(event.target.checked);
   };
@@ -114,17 +115,10 @@ export const TurnipJSONArea = observer(() => {
         <textarea
           id={'turnip-json-textarea'}
           className={'turnip-json-data'}
-          value={json_turnips}
-          readOnly
-          hidden={!jsonAutoUpdate}
-        />
-        <textarea
-          id={'turnip-json-textarea-editable'}
-          className={'turnip-json-data'}
-          hidden={jsonAutoUpdate}
+          defaultValue={json_turnips}
         />
         <button title={"Copy turnip JSON to clipboard"} onClick={() => copy2Clipboard('turnip-json-textarea')}><MdContentCopy /></button>
-        <button title={"Fill null fields from turnip JSON"} onClick={() => fillNullPricesInManager('turnip-json-textarea-editable', tps)}><MdSave /></button>
+        <button title={"Fill null fields from turnip JSON"} onClick={() => fillNullPricesInManager('turnip-json-textarea', tps)}><MdSave /></button>
       </div>
       <div className={'json-auto-update'}>
         <Checkbox

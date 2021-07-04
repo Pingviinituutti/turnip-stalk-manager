@@ -11,6 +11,7 @@ const calculateNumPossiblePatterns = (patterns: IPredictions) => {
 
 export class TurnipPriceStore {
   turnips: ITurnip[] = []
+  jsonAutoUpdate: boolean = true
   // isLoading = true
   constructor() {
     makeObservable(this, {
@@ -21,6 +22,7 @@ export class TurnipPriceStore {
       deleteTurnipAtIndex: action,
       updateTurnipPrice: action,
       cleanTurnips: action,
+      jsonAutoUpdate: observable,
     })
     if (typeof window !== 'undefined') {
       const url_turnips = new URLSearchParams(window.location.search).get('data')
@@ -40,7 +42,7 @@ export class TurnipPriceStore {
     }
     autorun(() => {
       console.log("Saving current state to local storage.")
-      if (typeof window !== 'undefined') localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
+      if (typeof window !== 'undefined' && this.jsonAutoUpdate) localStorage.setItem('TurnipPriceStore', JSON.stringify(this))
     })
   }
 
@@ -140,6 +142,14 @@ export class TurnipPriceStore {
 
   cleanTurnips = () => {
     this.turnips = this.turnips.filter(tp => tp.price)
+  }
+
+  getJsonAutoUpdate = () => {
+    return this.jsonAutoUpdate
+  }
+
+  toggleJsonAutoSave = () => {
+    this.jsonAutoUpdate = !this.jsonAutoUpdate
   }
 
   public getTurnipIndex = (turnip: ITurnip) => {
