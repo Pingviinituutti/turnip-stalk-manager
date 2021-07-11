@@ -41,6 +41,10 @@ export const TurnipWeekPredicter = observer((props: TurnipWeekPredicterProps) =>
           ? <div className={"pattern-prediction"}><p>S Spike:</p><p>{`${(possiblePatterns.pattern3?.probability * 100).toFixed()}%`}</p></div>
           : null
         }
+        {prices.some(p => p !== '') && !(possiblePatterns.pattern0.probability || possiblePatterns.pattern1.probability || possiblePatterns.pattern2.probability || possiblePatterns.pattern3.probability)
+            ? <p>Prediction failed</p>
+            : null
+        }
         {
           prices.some(p => p !== '') ? <a href={prophetURL} className={"prophet-url"} target="_blank">Possible prices</a> : null
         }
