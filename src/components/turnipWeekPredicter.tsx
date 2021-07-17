@@ -23,6 +23,7 @@ export const TurnipWeekPredicter = observer((props: TurnipWeekPredicterProps) =>
     prices.splice(1,1)
     const prophetPrevPattern = (previousPattern !== '' ? previousPattern.substring(0, 7) + '=' + previousPattern.substring(7, previousPattern.length) : '')
     const prophetURL = `https://turnipprophet.io?prices=${prices.join('.')}${previousPattern !== '' ? '&' + prophetPrevPattern : ''}`
+    const predictionFailed = prices.some(p => p !== '') && !(possiblePatterns.pattern0.probability || possiblePatterns.pattern1.probability || possiblePatterns.pattern2.probability || possiblePatterns.pattern3.probability);
     return (
       <div className={"pattern-predictions-container"}>
         {possiblePatterns.pattern0.probability
@@ -41,10 +42,8 @@ export const TurnipWeekPredicter = observer((props: TurnipWeekPredicterProps) =>
           ? <div className={"pattern-prediction"}><p>S Spike:</p><p>{`${(possiblePatterns.pattern3?.probability * 100).toFixed()}%`}</p></div>
           : null
         }
-        {prices.some(p => p !== '') && !(possiblePatterns.pattern0.probability || possiblePatterns.pattern1.probability || possiblePatterns.pattern2.probability || possiblePatterns.pattern3.probability)
-            ? <p>Prediction failed</p>
-            : null
-        }
+        {predictionFailed && <p>Prediction failed</p>}
+        {predictionFailed && prices[0] === '' && <p><i>No buy price</i></p>}
         {
           prices.some(p => p !== '') ? <a href={prophetURL} className={"prophet-url"} target="_blank">Possible prices</a> : null
         }
