@@ -89,7 +89,7 @@ const fillNullPricesInManager = (id: string, tps: TurnipPriceStore, message = "J
 
 const setElementValue = (id: string, value: string) => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
-  if (elem !== undefined) {
+  if (elem !== undefined && elem !== null) {
     elem.value = value
   }
 }
@@ -100,13 +100,12 @@ export const TurnipJSONArea = observer(() => {
   const turnips = tps.getTurnips()
   const json_turnips = JSON.stringify(turnips)
 
-  const [jsonAutoUpdate, setJsonAutoUpdate] = React.useState(tps.getJsonAutoUpdate())
-  const handleChange = (event: any) => {
+  const jsonAutoUpdate = tps.getJsonAutoUpdate()
+  if (jsonAutoUpdate) {
+    setElementValue('turnip-json-textarea', json_turnips)
+  }
+  const handleChange = () => {
     tps.toggleJsonAutoSave()
-    if (tps.getJsonAutoUpdate()) {
-      setElementValue('turnip-json-textarea', json_turnips)
-    }
-    setJsonAutoUpdate(event.target.checked);
   };
   return (
     <div className={'JSON-area'}>
