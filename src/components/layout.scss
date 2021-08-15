@@ -99,14 +99,20 @@ button {
     justify-content: space-between;
   }
   textarea {
-    min-width: calc(100% - 70px);
-    max-width: calc(100% - 70px);
+    min-width: calc(100% - 130px);
+    max-width: calc(100% - 130px);
   }
   button {
     width: 50px;
     cursor: pointer;
   }
 }
+
+.json-auto-update {
+  display: flex;
+  align-items: center;
+}
+
 .Toastify__toast--success {
   background: $green !important;
 }

@@ -19,6 +19,7 @@ interface PriceDialogProps {
 }
 
 export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
+  const { turnipPriceStore: tps } = useStores();
   const [open, setOpen] = React.useState(false);
   const [morningTurnip, setMorningTurnip] = React.useState(props.morningTurnip);
   const [morningPrice, setMorningPrice] = React.useState('')
@@ -28,8 +29,26 @@ export const TurnipPriceDialog = observer((props: PriceDialogProps) => {
   const [originalNoonPrice, setOriginalNoonPrice] = React.useState('');
   const [morningPriceError, setMorningPriceError] = React.useState(false)
   const [noonPriceError, setNoonPriceError] = React.useState(false)
-  
-  const { turnipPriceStore: tps } = useStores();
+  const storedMorningTurnips = morningTurnip ? tps.getTurnipFromDateAndTime(morningTurnip.day, morningTurnip.time) : undefined
+  const storedAfternoonTurnips = noonTurnip ? tps.getTurnipFromDateAndTime(noonTurnip.day, noonTurnip.time) : undefined
+
+  // Re-evaluating turnip status
+  if (!open) {
+    if (originalMorningPrice) {
+      if (storedMorningTurnips.length > 0 && originalMorningPrice !== storedMorningTurnips[0].price + '') {
+        setOriginalMorningPrice(storedMorningTurnips[0].price + '')
+        setMorningPrice(storedMorningTurnips[0].price + '')
+        setMorningTurnip(storedMorningTurnips[0])
+      }
+    }
+    if (originalNoonPrice) {
+      if (storedAfternoonTurnips.length > 0 && originalNoonPrice !== storedAfternoonTurnips[0].price + '') {
+        setOriginalNoonPrice(storedAfternoonTurnips[0].price + '')
+        setNoonPrice(storedAfternoonTurnips[0].price + '')
+        setNoonTurnip(storedAfternoonTurnips[0])
+      }
+    }
+  }
 
   const resetErrors = () => {
     setMorningPriceError(false)

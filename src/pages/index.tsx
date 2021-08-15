@@ -49,6 +49,17 @@ const IndexPage = () => (
         This Turnip Stalk Manager app is useful to logging your turnip price history.
         But if you want to check out the possible minimum and maximum prices during a week, take a look at the fantastic <a href="https://turnipprophet.io" target="_blank">Turnip Prohet</a> site made by Mike Bryant.
       </p>
+      <p>
+        The turnip JSON text area has been added to ease copying values to different services.
+      </p>
+      <p>
+        In case you want to copy a greater set of data with another manager, you can also use the turnip JSON text area to save that data to your manager.
+        This can be done by disabling the automatic update feature, editing/pasting data in the field, and finally pressing the save button.
+        Saving using this field fills only blank values. This helps against accidentally overwriting old data that you may want to use.
+      </p>
+      <p>
+        Note: The newly saved data won't show after saving the turnip JSON data, so you need to refresh the page to be able to see them on your manager.
+      </p>
     </Content>
     <Content title={"Credits"}>
       <p>

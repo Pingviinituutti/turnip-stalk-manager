@@ -3,7 +3,7 @@ import { observer } from "mobx-react"
 import Calendar from 'react-calendar'
 import { v4 as uuidv4 } from 'uuid'
 import { compressToEncodedURIComponent as compress } from 'lz-string'
-import { MdShare, MdContentCopy } from "react-icons/md/"
+import { MdShare, MdContentCopy, MdSave } from "react-icons/md/"
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,8 @@ import { TurnipPriceDialog } from "./TurnipPriceDialog";
 import { TurnipWeekPredicter } from "./turnipWeekPredicter";
 import { date2datestr } from "./helpers";
 import { ITurnip } from "./TurnipTypes";
+import { TurnipPriceStore } from "../stores/TurnipPriceStore";
+import { Checkbox } from "@material-ui/core";
 
 const share2Navigator = (id: string) => {
   const elem = document.getElementById(id) as HTMLTextAreaElement
@@ -51,12 +53,60 @@ const copy2Clipboard = (id: string, message = "JSON copied to clipboard!") => {
   }
 }
 
+const fillNullPricesInManager = (id: string, tps: TurnipPriceStore, message = "JSON saved to manager!") => {
+  const elem = document.getElementById(id) as HTMLTextAreaElement
+  if (elem !== undefined) {
+    const turnipsFromJson = JSON.parse(elem.value)
+    for (const turnip of turnipsFromJson) {
+      if (turnip === undefined) {
+        console.log(`Turnip can't be undefined`)
+      }
+      else if (turnip.price === undefined || turnip.price === null) {
+        console.log(`Price can't be undefined: ` + turnip.toString())
+      } else if (tps.turnipExists(turnip)) {
+        const storedTurnips = tps.getTurnipFromDateAndTime(turnip.day, turnip.time)
+        // turnipExists already returned true, so no check is made
+        if (storedTurnips[0].price === undefined || storedTurnips[0].price === null || isNaN(storedTurnips[0].price)) {
+          tps.updateTurnipPrice(turnip)
+        } else {
+          console.log(`Stored price is not undefined. Not updating`, turnip, storedTurnips[0].price)
+        }
+      } else {
+        tps.addTurnip(turnip)
+      }
+    }
+    toast.success(message, {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+    })
+  }
+}
+
+const setElementValue = (id: string, value: string) => {
+  const elem = document.getElementById(id) as HTMLTextAreaElement
+  if (elem !== undefined && elem !== null) {
+    elem.value = value
+  }
+}
+
 export const TurnipJSONArea = observer(() => {
   if (typeof window === 'undefined') return (<div className={'JSON-area'} />)
   const { turnipPriceStore: tps } = useStores()
   const turnips = tps.getTurnips()
   const json_turnips = JSON.stringify(turnips)
 
+  const jsonAutoUpdate = tps.getJsonAutoUpdate()
+  if (jsonAutoUpdate) {
+    setElementValue('turnip-json-textarea', json_turnips)
+  }
+  const handleChange = () => {
+    tps.toggleJsonAutoSave()
+  };
   return (
     <div className={'JSON-area'}>
       <h2>Turnip price data JSON</h2>
@@ -64,10 +114,18 @@ export const TurnipJSONArea = observer(() => {
         <textarea
           id={'turnip-json-textarea'}
           className={'turnip-json-data'}
-          value={json_turnips}
-          readOnly
+          defaultValue={json_turnips}
         />
         <button title={"Copy turnip JSON to clipboard"} onClick={() => copy2Clipboard('turnip-json-textarea')}><MdContentCopy /></button>
+        <button title={"Fill null fields from turnip JSON"} onClick={() => fillNullPricesInManager('turnip-json-textarea', tps)}><MdSave /></button>
+      </div>
+      <div className={'json-auto-update'}>
+        <Checkbox
+            checked={jsonAutoUpdate}
+            onChange={handleChange}
+            title={"Automatically update turnip JSON"}
+        />
+        <h3>Automatically update turnip JSON</h3>
       </div>
     </div>
   )
