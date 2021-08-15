@@ -66,7 +66,7 @@ const fillNullPricesInManager = (id: string, tps: TurnipPriceStore, message = "J
       } else if (tps.turnipExists(turnip)) {
         const storedTurnips = tps.getTurnipFromDateAndTime(turnip.day, turnip.time)
         // turnipExists already returned true, so no check is made
-        if (storedTurnips[0].price === undefined || storedTurnips[0].price === null) {
+        if (storedTurnips[0].price === undefined || storedTurnips[0].price === null || isNaN(storedTurnips[0].price)) {
           tps.updateTurnipPrice(turnip)
         } else {
           console.log(`Stored price is not undefined. Not updating`, turnip, storedTurnips[0].price)
